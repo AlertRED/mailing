@@ -4,14 +4,13 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 
 from view.qt import AccountsWindow
-import re
 
 
 class AccountsWindowView(QtWidgets.QMainWindow):
 
-    def __init__(self, controller):
+    def __init__(self, dao):
         super().__init__()
-        self.controller = controller
+        self.dao = dao
         self.ui = AccountsWindow.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.radioButton_single.toggled.connect(self.onSelectRadioButton_single)
@@ -23,14 +22,17 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         self.ui.pushButton_accept.setEnabled(False)
         self.ui.lineEdit_password.textChanged.connect(self.changedEmailAndPassword)
         self.ui.lineEdit_login.textChanged.connect(self.changedEmailAndPassword)
+        self.ui.lineEdit_pathTxt.textChanged.connect(self.changedPathTxt)
         self.ui.pushButton_test.setEnabled(False)
-
 
     def changedEmailAndPassword(self):
         not_empty = self.ui.lineEdit_password.text() != '' and self.ui.lineEdit_login.text() != ''
         self.ui.pushButton_accept.setEnabled(not_empty)
         self.ui.pushButton_test.setEnabled(not_empty)
 
+    def changedPathTxt(self):
+        not_empty = self.ui.lineEdit_pathTxt.text() != ''
+        self.ui.pushButton_accept.setEnabled(not_empty)
 
     def onSelectRadioButton_single(self, is_select):
         self.ui.label_login.setEnabled(is_select)
@@ -38,16 +40,20 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         self.ui.label_password.setEnabled(is_select)
         self.ui.lineEdit_password.setEnabled(is_select)
         self.ui.pushButton_test.setEnabled(is_select)
+        if is_select:
+            self.changedEmailAndPassword()
 
     def onSelectRadioButton_multiple(self, is_select):
         self.ui.lineEdit_pathTxt.setEnabled(is_select)
         self.ui.pushButton_browseTxt.setEnabled(is_select)
         self.ui.label_infoTxt.setEnabled(is_select)
+        if is_select:
+            self.changedPathTxt()
 
     def onClickTest(self):
         email = self.ui.lineEdit_login.text()
         password = self.ui.lineEdit_password.text()
-        self.controller.onClickTestAccount(email, password)
+        self.dao.onClickTestAccount(email, password)
 
     def onClickBrowse(self):
         pathOpen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0]
