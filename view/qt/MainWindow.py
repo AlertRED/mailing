@@ -58,19 +58,6 @@ class Ui_MainWindow(object):
         self.splitter = QtWidgets.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
-        self.tableWidget_data = QtWidgets.QTableWidget(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tableWidget_data.sizePolicy().hasHeightForWidth())
-        self.tableWidget_data.setSizePolicy(sizePolicy)
-        self.tableWidget_data.setMidLineWidth(0)
-        self.tableWidget_data.setAutoScroll(True)
-        self.tableWidget_data.setGridStyle(QtCore.Qt.SolidLine)
-        self.tableWidget_data.setWordWrap(True)
-        self.tableWidget_data.setRowCount(100)
-        self.tableWidget_data.setColumnCount(3)
-        self.tableWidget_data.setObjectName("tableWidget_data")
         self.plainText_log = QtWidgets.QPlainTextEdit(self.splitter)
         self.plainText_log.setReadOnly(True)
         self.plainText_log.setObjectName("plainText_log")
@@ -143,7 +130,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Mailling"))
-        self.tableWidget_data.setSortingEnabled(False)
         self.plainText_log.setPlainText(_translate("MainWindow", "[12:30:34] Sending to ieaio@mail.ru\n"
 "[*] Error to conection"))
         self.progressBar_mailing.setFormat(_translate("MainWindow", "%p%"))

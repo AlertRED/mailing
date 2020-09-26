@@ -1,8 +1,6 @@
 import os
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QMimeData
-from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
 
 from view.qt import DataWindow
@@ -17,21 +15,38 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton_browsPathXlsx.clicked.connect(self.onClickBrowsPathXlsx)
         self.ui.comboBox_sheets.currentIndexChanged.connect(self.select_sheet)
+        self.ui.pushButton_accept.clicked.connect(self.accept)
+        self.ui.lineEdit_pathXlsx.textChanged.connect(self.change_path_xlsx)
+        self.ui.plainText_message.textChanged.connect(self.change_message)
+
+    def change_path_xlsx(self):
+        path = self.ui.lineEdit_pathXlsx.text()
+        self.dao.set_xlsx(path)
+        self.enable_accept()
+
+    def change_message(self):
+        self.enable_accept()
+
+    def enable_accept(self):
+        if self.ui.lineEdit_pathXlsx.text() and self.ui.plainText_message.toPlainText() and self.ui.comboBox_sheets.currentIndex() != -1:
+            self.ui.pushButton_accept.setEnabled(True)
+        else:
+            self.ui.pushButton_accept.setEnabled(False)
 
     def onClickBrowsPathXlsx(self):
         pathOpen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), 'Excel (*.xls *.xlsx)')[0]
         if pathOpen != '':
             self.ui.lineEdit_pathXlsx.setText(pathOpen)
-            self.dao.set_xlsx(pathOpen)
-            self.show_sheets()
 
-    def show_sheets(self):
-        sheets = self.dao.get_sheets()
+    def show_sheets(self, sheets):
+        self.ui.comboBox_sheets.clear()
         self.ui.comboBox_sheets.addItems(sheets)
 
     def select_sheet(self, index):
-        text = self.ui.comboBox_sheets.itemText(index)
-        self.dao.load_data_from_sheet(text)
+        if index != -1:
+            text = self.ui.comboBox_sheets.currentText()
+            self.dao.load_data_from_sheet(text)
+        self.enable_accept()
 
     def show_xlsx(self, data):
         data = data
@@ -44,5 +59,15 @@ class DataWindowView(QtWidgets.QMainWindow):
                 self.ui.tableWidget_data.setItem(y, x, QTableWidgetItem(column_item))
         self.ui.tableWidget_data.resizeColumnsToContents()
 
+    def load_settings(self, path, message):
+        if path is not None:
+            self.ui.lineEdit_pathXlsx.setText(path)
+        if message is not None:
+            self.ui.plainText_message.setPlainText(message)
+
     def accept(self):
+        path_xlsx = self.ui.lineEdit_pathXlsx.text()
+        message = self.ui.plainText_message.toPlainText()
+        index = self.ui.comboBox_sheets.currentText()
+        self.dao.save_settings(path_xlsx, message)
         self.close()

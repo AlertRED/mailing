@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import json
+import os
 
 
 class Model:
@@ -36,26 +37,36 @@ class Model:
                     break
 
     def save_settings(self, window_name: str, settings: dict):
-        settings = {window_name: settings}
+        with open('settings.json', 'r+') as file:
+            json_settings = json.load(file)
+
+        json_settings[window_name] = settings
+
         with open('settings.json', 'w') as file:
-            json.dump(settings, file)
+            json.dump(json_settings, file)
 
     def get_settings(self, window_name: str):
-        with open('settings.json', 'r') as file:
+        with open('settings.json', 'r+') as file:
             try:
-                return json.load(file).get(window_name)
+                return json.load(file).get(window_name, dict())
             except:
                 return dict()
 
     def getCountAccounts(self):
         return len(self.accounts)
 
-    def set_xlsx(self, path):
-        self.file = pd.ExcelFile(path)
+    def load_xlsx(self, path):
+        _, file_extension = os.path.splitext(path)
+        if file_extension == '.xlsx' and os.path.isfile(path):
+            self.file = pd.ExcelFile(path)
+        else:
+            self.file = None
         # self.xlsx_data = self.xlsx_data.fillna('')
 
     def get_sheets(self):
-        return self.file.sheet_names
+        if self.file:
+            return self.file.sheet_names
+        return []
 
     def get_data_from_sheet(self, sheet):
         return self.file.parse(sheet, dtype=str).fillna('')

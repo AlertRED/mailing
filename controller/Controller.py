@@ -14,13 +14,13 @@ from model.Model import Model
 class Controller():
 
     def __init__(self):
-        self.app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
+        self.app = QtWidgets.QApplication(sys.argv)
 
         self.model = Model()
 
         self.mainDao = MainDao(self.model, self)
         self.mainWindow = MainWindow.Ui_MainWindow()
-        self.mainWindowModel = MainWindowView(self.mainDao)  # Создаём объект класса ExampleApp
+        self.mainWindowModel = MainWindowView(self.mainDao)
 
         self.dataDao = DataDao(self.model, self)
         self.dataWindow = DataWindow.Ui_MainWindow()
@@ -29,10 +29,8 @@ class Controller():
         self.accountsDao = AccountsDao(self.model, self)
         self.accountsWindow = AccountsWindow.Ui_MainWindow()
         self.accountsWindowModel = AccountsWindowView(self.accountsDao)
-        self.accountsDao.load_settings()
 
 
     def start_app(self):
         self.mainWindowModel.show()
-        self.accountsWindowModel.show()
         self.app.exec_()
