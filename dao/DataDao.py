@@ -7,14 +7,14 @@ class DataDao:
     def set_xlsx(self, path):
         self.model.load_xlsx(path)
         sheets = self.get_sheets()
-        self.controller.dataWindowModel.show_sheets(sheets)
+        self.controller.dataView.show_sheets(sheets)
 
     def get_sheets(self):
         return self.model.get_sheets()
 
     def load_data_from_sheet(self, sheet):
         data = self.model.get_data_from_sheet(sheet)
-        self.controller.dataWindowModel.show_xlsx(data)
+        self.controller.show_xlsx_on_data_window(data)
 
     def save_settings(self, path_xlsx, message):
         self.model.save_settings("Data",
@@ -22,4 +22,4 @@ class DataDao:
 
     def load_settings(self):
         settings = self.model.get_settings("Data")
-        self.controller.dataWindowModel.load_settings(settings.get('path_xlsx'), settings.get('message'))
+        self.controller.dataView.load_settings(settings.get('path_xlsx'), settings.get('message'))

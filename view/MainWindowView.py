@@ -3,16 +3,16 @@ from view.qt import MainWindow
 
 class MainWindowView(QtWidgets.QMainWindow):
 
-    def __init__(self, dao):
+    def __init__(self, controller):
         super().__init__()
         self.ui = MainWindow.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.dao = dao
+        self.controller = controller
         self.ui.actionData.triggered.connect(self.onClickActionData)
         self.ui.actionAccounts.triggered.connect(self.onClickActionAccounts)
 
     def onClickActionData(self):
-        self.dao.openDataWindow()
+        self.controller.open_data_window()
 
     def onClickActionAccounts(self):
-        self.dao.openAccountsWindow()
+        self.controller.open_accounts_window()

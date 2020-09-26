@@ -19,18 +19,38 @@ class Controller():
         self.model = Model()
 
         self.mainDao = MainDao(self.model, self)
-        self.mainWindow = MainWindow.Ui_MainWindow()
-        self.mainWindowModel = MainWindowView(self.mainDao)
+        self.mainView = MainWindowView(self)
 
         self.dataDao = DataDao(self.model, self)
-        self.dataWindow = DataWindow.Ui_MainWindow()
-        self.dataWindowModel = DataWindowView(self.dataDao)
+        self.dataView = DataWindowView(self)
 
         self.accountsDao = AccountsDao(self.model, self)
-        self.accountsWindow = AccountsWindow.Ui_MainWindow()
-        self.accountsWindowModel = AccountsWindowView(self.accountsDao)
+        self.accountsView = AccountsWindowView(self)
 
+    def save_account_settings(self, is_single, email, password, path_txt):
+        self.accountsDao.save_settings(is_single, email, password, path_txt)
+
+    def test_account(self, email, password):
+        self.accountsDao.test_account(email, password)
+
+    def set_xlsx(self, path):
+        self.dataDao.set_xlsx(path)
+
+    def load_data_from_sheet(self, text):
+        self.dataDao.load_data_from_sheet(text)
+
+    def save_data_settings(self, path_xlsx, message):
+        self.dataDao.save_settings(path_xlsx, message)
+
+    def show_xlsx_on_data_window(self, data):
+        self.dataView.show_xlsx(data)
+
+    def open_data_window(self):
+        self.dataView.show()
+
+    def open_accounts_window(self):
+        self.accountsView.show()
 
     def start_app(self):
-        self.mainWindowModel.show()
+        self.mainView.show()
         self.app.exec_()

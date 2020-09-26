@@ -8,9 +8,9 @@ from view.qt import AccountsWindow
 
 class AccountsWindowView(QtWidgets.QMainWindow):
 
-    def __init__(self, dao):
+    def __init__(self, controller):
         super().__init__()
-        self.dao = dao
+        self.controller = controller
         self.ui = AccountsWindow.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.radioButton_single.toggled.connect(self.onSelectRadioButton_single)
@@ -53,7 +53,7 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     def onClickTest(self):
         email = self.ui.lineEdit_login.text()
         password = self.ui.lineEdit_password.text()
-        self.dao.onClickTestAccount(email, password)
+        self.controller.test_account(email, password)
 
     def onClickBrowse(self):
         pathOpen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0]
@@ -92,5 +92,5 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         email = self.ui.lineEdit_login.text()
         password = self.ui.lineEdit_password.text()
         path_txt = self.ui.lineEdit_pathTxt.text()
-        self.dao.save_settings(is_single, email, password, path_txt)
+        self.controller.save_account_settings(is_single, email, password, path_txt)
         self.close()

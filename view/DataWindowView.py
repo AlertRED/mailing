@@ -8,9 +8,9 @@ from view.qt import DataWindow
 
 class DataWindowView(QtWidgets.QMainWindow):
 
-    def __init__(self, dao):
+    def __init__(self, controller):
         super().__init__()
-        self.dao = dao
+        self.controller = controller
         self.ui = DataWindow.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton_browsPathXlsx.clicked.connect(self.onClickBrowsPathXlsx)
@@ -21,7 +21,7 @@ class DataWindowView(QtWidgets.QMainWindow):
 
     def change_path_xlsx(self):
         path = self.ui.lineEdit_pathXlsx.text()
-        self.dao.set_xlsx(path)
+        self.controller.set_xlsx(path)
         self.enable_accept()
 
     def change_message(self):
@@ -45,7 +45,7 @@ class DataWindowView(QtWidgets.QMainWindow):
     def select_sheet(self, index):
         if index != -1:
             text = self.ui.comboBox_sheets.currentText()
-            self.dao.load_data_from_sheet(text)
+            self.controller.load_data_from_sheet(text)
         self.enable_accept()
 
     def show_xlsx(self, data):
@@ -69,5 +69,5 @@ class DataWindowView(QtWidgets.QMainWindow):
         path_xlsx = self.ui.lineEdit_pathXlsx.text()
         message = self.ui.plainText_message.toPlainText()
         index = self.ui.comboBox_sheets.currentText()
-        self.dao.save_settings(path_xlsx, message)
+        self.controller.save_data_settings(path_xlsx, message)
         self.close()

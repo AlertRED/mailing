@@ -6,10 +6,10 @@ class MainDao:
         self.controller = controller
 
     def openDataWindow(self):
-        self.controller.dataWindowModel.show()
+        self.controller.dataView.show()
 
     def openAccountsWindow(self):
-        self.controller.accountsWindowModel.show()
+        self.controller.accountsView.show()
 
 
 
