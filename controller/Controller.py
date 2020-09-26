@@ -29,6 +29,7 @@ class Controller():
         self.accountsDao = AccountsDao(self.model, self)
         self.accountsWindow = AccountsWindow.Ui_MainWindow()
         self.accountsWindowModel = AccountsWindowView(self.accountsDao)
+        self.accountsDao.load_settings()
 
 
     def start_app(self):

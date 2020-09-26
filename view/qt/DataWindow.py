@@ -44,6 +44,9 @@ class Ui_MainWindow(object):
         self.pushButton_browsPathXlsx.setObjectName("pushButton_browsPathXlsx")
         self.horizontalLayout.addWidget(self.pushButton_browsPathXlsx)
         self.verticalLayout.addLayout(self.horizontalLayout)
+        self.comboBox_sheets = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_sheets.setObjectName("comboBox_sheets")
+        self.verticalLayout.addWidget(self.comboBox_sheets)
         self.tableWidget_data = QtWidgets.QTableWidget(self.layoutWidget)
         self.tableWidget_data.setObjectName("tableWidget_data")
         self.tableWidget_data.setColumnCount(0)
@@ -105,6 +108,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Data"))
         self.pushButton_browsPathXlsx.setText(_translate("MainWindow", "Browse"))
+        self.comboBox_sheets.setPlaceholderText(_translate("MainWindow", "Choose sheet"))
         self.label_message.setText(_translate("MainWindow", "Message"))
         self.label_infoMessage.setText(_translate("MainWindow", "The message should contain the name of the data column in {<column_name>}\n"
 "Example: Hello, {name}!"))

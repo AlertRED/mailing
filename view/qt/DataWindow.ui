@@ -48,6 +48,13 @@
            </layout>
           </item>
           <item>
+           <widget class="QComboBox" name="comboBox_sheets">
+            <property name="placeholderText">
+             <string>Choose sheet</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QTableWidget" name="tableWidget_data"/>
           </item>
          </layout>

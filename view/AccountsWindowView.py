@@ -77,5 +77,20 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         self.ui.label_error.setStyleSheet(style)
         self.ui.label_error.setText(("Error: %s" if is_error else "Info: %s") % message)
 
+    def load_settings(self, is_single, email, password, path_txt):
+        if is_single is not None:
+            self.ui.radioButton_single.setChecked(is_single)
+        if email is not None:
+            self.ui.lineEdit_login.setText(email)
+        if password is not None:
+            self.ui.lineEdit_password.setText(password)
+        if path_txt is not None:
+            self.ui.lineEdit_pathTxt.setText(path_txt)
+
     def accept(self):
+        is_single = self.ui.radioButton_single.isChecked()
+        email = self.ui.lineEdit_login.text()
+        password = self.ui.lineEdit_password.text()
+        path_txt = self.ui.lineEdit_pathTxt.text()
+        self.dao.save_settings(is_single, email, password, path_txt)
         self.close()
