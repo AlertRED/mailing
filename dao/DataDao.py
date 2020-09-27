@@ -1,25 +1,28 @@
+from model.Model import Model
+
+
 class DataDao:
 
-    def __init__(self, model, controller):
+    def __init__(self, model: Model):
         self.model = model
-        self.controller = controller
 
     def set_xlsx(self, path):
         self.model.load_xlsx(path)
-        sheets = self.get_sheets()
-        self.controller.dataView.show_sheets(sheets)
 
     def get_sheets(self):
         return self.model.get_sheets()
 
-    def load_data_from_sheet(self, sheet):
-        data = self.model.get_data_from_sheet(sheet)
-        self.controller.show_xlsx_on_data_window(data)
+    def load_sheet(self, sheet):
+        return self.model.get_data_from_sheet(sheet)
 
-    def save_settings(self, path_xlsx, message):
+    def set_email_column(self, email_column):
+        return self.model.set_email_column(email_column)
+
+    def save_settings(self, path_xlsx, sheet, email_column, message):
         self.model.save_settings("Data",
-                                 {'path_xlsx': path_xlsx, 'message': message})
+                                 {'path_xlsx': path_xlsx, 'sheet': sheet, 'email_column': email_column,
+                                  'message': message})
 
     def load_settings(self):
         settings = self.model.get_settings("Data")
-        self.controller.dataView.load_settings(settings.get('path_xlsx'), settings.get('message'))
+        return settings.get('path_xlsx'), settings.get('sheet'), settings.get('email_column'), settings.get('message')

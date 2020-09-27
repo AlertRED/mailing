@@ -63,14 +63,11 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     def showEmailIsNotValidate(self):
         self.showStatus('Email is not validate', True)
 
-    def showAccountIsConnected(self, is_connected):
-        if is_connected:
-            self.showStatus('Account is connected', False)
-        else:
-            self.showStatus('Account is not connected', True)
+    def showError(self, text):
+        self.showStatus(text)
 
-    def showEmailNotValidate(self):
-        self.showStatus('Email is not validate')
+    def showInfo(self, text):
+        self.showStatus(text, True)
 
     def showStatus(self, message, is_error: bool = True):
         style = "QLabel { color : %s; }" % ("red" if is_error else "green")

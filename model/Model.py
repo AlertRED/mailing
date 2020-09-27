@@ -13,6 +13,7 @@ class Model:
         self.fields = dict()
         self.xlsx_data = None
         self.file = None
+        self.email_column = ''
 
     def is_validate_email(self, email):
         return re.match(r'[^@]+@[^@]+\.[^@]+', email)
@@ -70,3 +71,6 @@ class Model:
 
     def get_data_from_sheet(self, sheet):
         return self.file.parse(sheet, dtype=str).fillna('')
+
+    def set_email_column(self, text: str):
+        self.email_column = text
