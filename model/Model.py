@@ -1,4 +1,6 @@
 import re
+from time import sleep
+
 import pandas as pd
 import json
 import os
@@ -14,6 +16,9 @@ class Model:
         self.xlsx_data = None
         self.file = None
         self.email_column = ''
+
+        self.is_pause = False
+        self.is_start = False
 
     def is_validate_email(self, email):
         return re.match(r'[^@]+@[^@]+\.[^@]+', email)
@@ -38,6 +43,19 @@ class Model:
                     break
 
     def save_settings(self, window_name: str, settings: dict):
+
+
+        self.path_xlsx = settings.get('path_xlsx')
+        self.sheet = settings.get('sheet')
+        self.email_column = settings.get('email_column')
+        self.message = settings.get('message')
+        self.is_single = settings.get('is_single')
+        self.email = settings.get('email')
+        self.password = settings.get('password')
+        self.path_txt = settings.get('path_txt')
+        self.email_index = settings.get('email_index')
+
+
         with open('settings.json', 'r+') as file:
             json_settings = json.load(file)
 
@@ -74,3 +92,24 @@ class Model:
 
     def set_email_column(self, text: str):
         self.email_column = text
+
+    def pause_mailing(self):
+        self.is_pause = True
+
+    def stop_mailing(self):
+        self.is_start = False
+        self.is_pause = False
+        self.save_settings('Main', {'email_index': 0})
+
+    def mailing(self):
+        if not self.is_start or self.is_pause:
+            self.is_start = True
+            self.is_pause = False
+            start_index = self.get_settings('Main').get('email_index', 0)
+            for i in range(start_index, 5):
+                if not self.is_start or self.is_pause:
+                    break
+                email = f'{i}@mail.ru'
+                self.save_settings('Main', {'email_index': i + 1})
+                yield email
+                sleep(1)

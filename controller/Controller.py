@@ -1,5 +1,9 @@
 import sys
+import threading
+from time import sleep
+
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject
 
 from Exception import UserError
 from dao.AccountsDao import AccountsDao
@@ -11,9 +15,11 @@ from view.DataWindowView import DataWindowView
 from model.Model import Model
 
 
-class Controller():
+class Controller(QObject):
+    print_log = pyqtSignal(str, bool)
 
     def __init__(self):
+        super().__init__()
         self.app = QtWidgets.QApplication(sys.argv)
 
         self.model = Model()
@@ -28,6 +34,8 @@ class Controller():
         self.accountsDao = AccountsDao(self.model, self)
         self.accountsView = AccountsWindowView(self)
         self.load_settings_accounts()
+
+        self.print_log.connect(self.mainView.printLog)
 
     def save_account_settings(self, is_single, email, password, path_txt):
         self.accountsDao.save_settings(is_single, email, password, path_txt)
@@ -73,6 +81,21 @@ class Controller():
     def load_settings_data(self):
         path_xlsx, sheet, email_column, message = self.dataDao.load_settings()
         self.dataView.load_settings(path_xlsx, sheet, email_column, message)
+
+    def start_mailing(self):
+
+        def foo(print_log):
+            for message in self.mainDao.mailing():
+                print_log.emit(message, True)
+
+        x = threading.Thread(target=foo, args=(self.print_log,))
+        x.start()
+
+    def stop_mailing(self):
+        self.mainDao.stop_mailing()
+
+    def pause_mailing(self):
+        self.mainDao.pause_mailing()
 
     def start_app(self):
         self.mainView.show()

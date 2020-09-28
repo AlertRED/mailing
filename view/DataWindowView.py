@@ -77,7 +77,7 @@ class DataWindowView(QtWidgets.QMainWindow):
         if sheet is not None:
             self.ui.comboBox_sheets.setCurrentText(sheet)
         if email_column is not None:
-            self.ui.comboBox_emailColumn.setCurrentText(path_xlsx)
+            self.ui.comboBox_emailColumn.setCurrentText(email_column)
         if message is not None:
             self.ui.plainText_message.setPlainText(message)
 
