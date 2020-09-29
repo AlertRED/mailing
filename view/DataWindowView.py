@@ -15,7 +15,6 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton_browsPathXlsx.clicked.connect(self.onClickBrowsPathXlsx)
         self.ui.comboBox_sheets.currentIndexChanged.connect(self.select_sheet)
-        self.ui.comboBox_emailColumn.currentIndexChanged.connect(self.select_email_column)
         self.ui.pushButton_accept.clicked.connect(self.accept)
         self.ui.lineEdit_pathXlsx.textChanged.connect(self.change_path_xlsx)
         self.ui.plainText_message.textChanged.connect(self.change_message)
@@ -55,20 +54,14 @@ class DataWindowView(QtWidgets.QMainWindow):
         else:
             self.ui.comboBox_sheets.setCurrentText(False)
 
-    def select_email_column(self, index):
-        if index != -1:
-            text = self.ui.comboBox_sheets.currentText()
-            self.controller.select_email(text)
-
-    def show_xlsx(self, data):
-        headers = data.keys()
-        self.ui.comboBox_emailColumn.addItems(headers)
-        self.ui.tableWidget_data.setRowCount(data.shape[0])
-        self.ui.tableWidget_data.setColumnCount(data.shape[1])
-        self.ui.tableWidget_data.setHorizontalHeaderLabels(headers)
-        for x, header in enumerate(headers):
-            for y, column_item in enumerate(data[header]):
-                self.ui.tableWidget_data.setItem(y, x, QTableWidgetItem(column_item))
+    def show_xlsx(self, titles, fields):
+        self.ui.comboBox_emailColumn.addItems(titles)
+        self.ui.tableWidget_data.setRowCount(len(fields))
+        self.ui.tableWidget_data.setColumnCount(len(titles))
+        self.ui.tableWidget_data.setHorizontalHeaderLabels(titles)
+        for x, row in enumerate(fields):
+            for y, item in enumerate(row):
+                self.ui.tableWidget_data.setItem(x, y, QTableWidgetItem(item))
         self.ui.tableWidget_data.resizeColumnsToContents()
 
     def load_settings(self, path_xlsx, sheet, email_column, message):

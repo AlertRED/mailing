@@ -1,9 +1,8 @@
 import sys
 import threading
-from time import sleep
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from Exception import UserError
 from dao.AccountsDao import AccountsDao
@@ -12,7 +11,11 @@ from dao.MainDao import MainDao
 from view.MainWindowView import MainWindowView
 from view.AccountsWindowView import AccountsWindowView
 from view.DataWindowView import DataWindowView
-from model.Model import Model
+from model.ValidateModel import ValidateModel
+from model.AccountsModel import AccountsModel
+from model.XlsxModel import XlsxModel
+from model.MailingModel import MailingModel
+from settings import Settings
 
 
 class Controller(QObject):
@@ -22,16 +25,22 @@ class Controller(QObject):
         super().__init__()
         self.app = QtWidgets.QApplication(sys.argv)
 
-        self.model = Model()
+        self.settings = Settings()
+        self.settings.load_settings()
 
-        self.mainDao = MainDao(self.model, self)
+        self.validate_model = ValidateModel()
+        self.accounts_model = AccountsModel(self.validate_model)
+        self.xlsx_model = XlsxModel()
+        self.mailing_model = MailingModel(self.settings)
+
+        self.mainDao = MainDao(self.mailing_model, self.xlsx_model, self, self.settings)
         self.mainView = MainWindowView(self)
 
-        self.dataDao = DataDao(self.model)
+        self.dataDao = DataDao(self.validate_model, self.settings, self.xlsx_model)
         self.dataView = DataWindowView(self)
         self.load_settings_data()
 
-        self.accountsDao = AccountsDao(self.model, self)
+        self.accountsDao = AccountsDao(self.accounts_model, self.validate_model, self.settings)
         self.accountsView = AccountsWindowView(self)
         self.load_settings_accounts()
 
@@ -50,20 +59,14 @@ class Controller(QObject):
         except UserError as e:
             self.accountsView.showError(e)
 
-    def set_email_column(self, text):
-        self.model.set_email_column(text)
-
     def load_xlsx(self, path):
-        self.dataDao.set_xlsx(path)
+        self.dataDao.load_xlsx(path)
         sheets = self.dataDao.get_sheets()
         self.dataView.show_sheets(sheets)
 
-    def select_email(self, text):
-        self.dataDao.set_email_column(text)
-
     def select_sheet(self, text):
         data = self.dataDao.load_sheet(text)
-        self.dataView.show_xlsx(data)
+        self.dataView.show_xlsx(data[0], data[1])
 
     def save_data_settings(self, path_xlsx, sheet, email_column, message):
         self.dataDao.save_settings(path_xlsx, sheet, email_column, message)

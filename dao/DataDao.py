@@ -1,28 +1,30 @@
-from model.Model import Model
+from model.ValidateModel import ValidateModel
+from model.XlsxModel import XlsxModel
+from settings import Settings
 
 
 class DataDao:
 
-    def __init__(self, model: Model):
-        self.model = model
-
-    def set_xlsx(self, path):
-        self.model.load_xlsx(path)
+    def __init__(self, validate_model: ValidateModel, settings: Settings, xlsx_model: XlsxModel):
+        self.validate_model = validate_model
+        self.settings = settings
+        self.xlsx_model = xlsx_model
 
     def get_sheets(self):
-        return self.model.get_sheets()
+        return self.xlsx_model.get_sheets()
 
     def load_sheet(self, sheet):
-        return self.model.get_data_from_sheet(sheet)
+        self.xlsx_model.load_data_from_sheet(sheet)
+        data = self.xlsx_model.get_data()
+        return data
 
-    def set_email_column(self, email_column):
-        return self.model.set_email_column(email_column)
+    def load_xlsx(self, path):
+        if self.validate_model.is_validate_xlsx(path):
+            self.xlsx_model.load_xlsx(path)
 
     def save_settings(self, path_xlsx, sheet, email_column, message):
-        self.model.save_settings("Data",
-                                 {'path_xlsx': path_xlsx, 'sheet': sheet, 'email_column': email_column,
+        self.settings.add_settings({'path_xlsx': path_xlsx, 'sheet': sheet, 'email_column': email_column,
                                   'message': message})
 
     def load_settings(self):
-        settings = self.model.get_settings("Data")
-        return settings.get('path_xlsx'), settings.get('sheet'), settings.get('email_column'), settings.get('message')
+        return self.settings.get_settings('path_xlsx'), self.settings.get_settings('sheet'), self.settings.get_settings('email_column'), self.settings.get_settings('message')

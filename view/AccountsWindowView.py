@@ -67,7 +67,7 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         self.showStatus(text)
 
     def showInfo(self, text):
-        self.showStatus(text, True)
+        self.showStatus(text, False)
 
     def showStatus(self, message, is_error: bool = True):
         style = "QLabel { color : %s; }" % ("red" if is_error else "green")
