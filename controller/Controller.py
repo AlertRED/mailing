@@ -131,7 +131,7 @@ class Controller(QObject):
 
     def stop_mailing(self):
         self.mainDao.stop_mailing()
-        self.print_progress.emit(0, 100)
+        self.print_progress.emit(0, 0)
 
     def pause_mailing(self):
         self.mainDao.pause_mailing()

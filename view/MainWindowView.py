@@ -19,6 +19,8 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.ui.pushButton_pause.clicked.connect(self.pause)
         self.ui.pushButton_stop.clicked.connect(self.stop)
         self.printProgress(0, 0)
+        self.ui.pushButton_stop.setEnabled(False)
+        self.ui.pushButton_pause.setEnabled(False)
 
     def showViews(self, texts, connects):
         for text, connect in zip(reversed(texts), reversed(connects)):
@@ -38,14 +40,25 @@ class MainWindowView(QtWidgets.QMainWindow):
     def play(self):
         self.printLog('Рассылка начата', with_time=True)
         self.controller.start_mailing()
+        self.ui.pushButton_play.setEnabled(False)
+        self.ui.pushButton_pause.setEnabled(True)
+        self.ui.pushButton_stop.setEnabled(True)
 
     def pause(self):
         self.printLog('Рассылка приостановленна', with_time=True)
         self.controller.pause_mailing()
+        self.ui.pushButton_play.setEnabled(True)
+        self.ui.pushButton_pause.setEnabled(False)
+        self.ui.pushButton_stop.setEnabled(True)
+
 
     def stop(self):
         self.printLog('Рассылка окончена', with_time=True)
         self.controller.stop_mailing()
+        self.ui.pushButton_play.setEnabled(True)
+        self.ui.pushButton_pause.setEnabled(False)
+        self.ui.pushButton_stop.setEnabled(False)
+
 
     @pyqtSlot(str, bool)
     def printLog(self, text, with_time=True):
