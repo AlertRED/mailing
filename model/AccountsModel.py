@@ -7,7 +7,7 @@ class AccountsModel():
         self.validate = validate
 
     def findAccountsFromFile(self, path):
-        self.accounts.clear()
+        accounts = []
         with open(path, 'r', encoding='utf8') as file:
             while True:
                 line = file.readline().strip().replace('\n', '')
@@ -15,10 +15,21 @@ class AccountsModel():
                     account = line.split(':')
                     if len(account) == 2 and self.validate.is_validate_password(
                             account[0]) and self.validate.is_validate_email(
-                            account[0]):
-                        self.accounts.append(tuple(account))
+                        account[0]):
+                        accounts.append(tuple(account))
                 else:
                     break
+        return accounts
+
+    def set_account(self, email, password):
+        self.accounts = [(email, password)]
+
+    def set_accounts_from_file(self, path):
+        self.accounts = self.findAccountsFromFile(path)
+
+    def get_account(self):
+        for account in self.accounts:
+            yield account
 
     def getCountAccounts(self):
         return len(self.accounts)
