@@ -43,11 +43,11 @@ class Controller(QObject):
         self.dataDao.load_settings()
         self.accountsDao.load_settings()
 
-        self.print_log.connect(self.mainView.printLog)
-        self.print_progress.connect(self.mainView.printProgress)
+        self.print_log.connect(self.mainView.print_log)
+        self.print_progress.connect(self.mainView.print_progress)
 
-        self.mainView.showViews(['From', 'To', 'Title', 'Message'],
-                                [self.change_state_from, self.change_state_to, self.change_state_title,
+        self.mainView.show_filters_checkboxes(['From', 'To', 'Title', 'Message'],
+                                              [self.change_state_from, self.change_state_to, self.change_state_title,
                                  self.change_state_message])
         self.is_from = False
         self.is_to = False
@@ -128,6 +128,7 @@ class Controller(QObject):
 
         x = threading.Thread(target=foo, args=(self.print_log, self.print_progress,))
         x.start()
+
 
     def stop_mailing(self):
         self.mainDao.stop_mailing()
