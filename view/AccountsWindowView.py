@@ -12,6 +12,7 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     change_password_signal = pyqtSignal(str)
     change_path_accounts = pyqtSignal(str)
 
+
     def __init__(self):
         super().__init__()
         self.ui = AccountsWindow.Ui_MainWindow()
@@ -70,6 +71,18 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     def enable_accept(self, is_enable):
         self.ui.pushButton_accept.setEnabled(is_enable)
 
+    def show_error(self, text):
+        self._show_status(text)
+
+    def show_info(self, text):
+        self._show_status(text, False)
+
+    def _show_status(self, message, is_error: bool = True):
+        style = "QLabel { color : %s; }" % ("red" if is_error else "green")
+        self.ui.label_error.setStyleSheet(style)
+        self.ui.label_error.setText(("Error: %s" if is_error else "Info: %s") % message)
+
+
     #
     # def test_login(self):
     #     email = self.ui.lineEdit_login.text()
@@ -80,17 +93,6 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     #     pathOpen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd())[0]
     #     if pathOpen != '':
     #         self.ui.lineEdit_pathTxt.setText(pathOpen)
-    #
-    # def show_error(self, text):
-    #     self.showStatus(text)
-    #
-    # def show_info(self, text):
-    #     self.showStatus(text, False)
-    #
-    # def _show_status(self, message, is_error: bool = True):
-    #     style = "QLabel { color : %s; }" % ("red" if is_error else "green")
-    #     self.ui.label_error.setStyleSheet(style)
-    #     self.ui.label_error.setText(("Error: %s" if is_error else "Info: %s") % message)
     #
     # # def load_settings(self, is_single, email, password, path_txt):
     # #     if is_single is not None:

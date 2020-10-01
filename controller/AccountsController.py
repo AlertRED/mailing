@@ -14,6 +14,13 @@ class AccountsController:
         self.accountsView.change_login_signal.connect(self.change_login)
         self.accountsView.change_password_signal.connect(self.change_password)
         self.accountsView.change_path_accounts.connect(self.change_path_accounts)
+        self.accountsView.test_login_signal.connect(self.test_account)
+
+    def test_account(self):
+        if self.model.password != '' and self.model.login != '':
+            self.accountsView.show_info('Account is connected')
+        else:
+            self.accountsView.show_error('Account not is connected')
 
     def change_login(self, text):
         self.model.login = text
