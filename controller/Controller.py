@@ -73,11 +73,11 @@ class Controller(QObject):
         try:
             is_connected = self.accountsDao.test_account(email, password)
             if is_connected:
-                self.accountsView.showInfo('Account is connected')
+                self.accountsView.show_info('Account is connected')
             else:
-                self.accountsView.showInfo('Account NOT is connected')
+                self.accountsView.show_info('Account NOT is connected')
         except UserError as e:
-            self.accountsView.showError(e)
+            self.accountsView.show_error(e)
 
     def load_sheets(self, path):
         self.dataDao.load_xlsx(path)
