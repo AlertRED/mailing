@@ -104,9 +104,6 @@ class Controller(QObject):
             self.accountsView.select_multiple_part()
 
 
-
-
-
     def enable_accept(self):
         if self.model.is_single:
             not_empty = self.model.login != '' and self.model.password != ''
