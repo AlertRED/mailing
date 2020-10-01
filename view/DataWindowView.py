@@ -13,8 +13,8 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.controller = controller
         self.ui = DataWindow.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.pushButton_browsPathXlsx.clicked.connect(self.onClickBrowsPathXlsx)
-        self.ui.comboBox_sheets.currentIndexChanged.connect(self.select_sheet)
+        self.ui.pushButton_browsPathXlsx.clicked.connect(self.browse_xlsx)
+        self.ui.comboBox_sheets.currentIndexChanged.connect(self._select_sheet)
         self.ui.pushButton_accept.clicked.connect(self.accept)
         self.ui.lineEdit_pathXlsx.textChanged.connect(self.change_path_xlsx)
         self.ui.lineEdit_title.textChanged.connect(self.change_title)
@@ -25,6 +25,8 @@ class DataWindowView(QtWidgets.QMainWindow):
     def change_path_xlsx(self):
         path = self.ui.lineEdit_pathXlsx.text()
         self.controller.load_sheets(path)
+
+    def path_xlsx_is_validate(self):
         self.enable_accept()
 
     def change_message(self):
@@ -43,20 +45,19 @@ class DataWindowView(QtWidgets.QMainWindow):
         else:
             self.ui.pushButton_accept.setEnabled(False)
 
-    def onClickBrowsPathXlsx(self):
-        pathOpen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), 'Excel (*.xls *.xlsx)')[0]
-        if pathOpen != '':
-            self.ui.lineEdit_pathXlsx.setText(pathOpen)
+    def browse_xlsx(self):
+        path_open = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), 'Excel (*.xls *.xlsx)')[0]
+        if path_open != '':
+            self.ui.lineEdit_pathXlsx.setText(path_open)
 
     def show_sheets(self, sheets):
         self.ui.comboBox_sheets.clear()
         self.ui.comboBox_sheets.addItems(sheets)
-        self.ui.comboBox_sheets.setEnabled(sheets != [])
 
-    def select_sheet(self, index):
+    def _select_sheet(self, index):
         if index != -1:
-            text = self.ui.comboBox_sheets.currentText()
-            self.controller.select_sheet(text)
+            sheet_name = self.ui.comboBox_sheets.currentText()
+            self.controller.select_sheet(sheet_name)
             self.ui.comboBox_emailColumn.setEnabled(True)
             self.enable_accept()
         else:
@@ -73,17 +74,17 @@ class DataWindowView(QtWidgets.QMainWindow):
                 self.ui.tableWidget_data.setItem(x, y, QTableWidgetItem(item))
         self.ui.tableWidget_data.resizeColumnsToContents()
 
-    def load_settings(self, path_xlsx, sheet, email_column, message, title):
-        if path_xlsx is not None:
-            self.ui.lineEdit_pathXlsx.setText(path_xlsx)
-        if sheet is not None:
-            self.ui.comboBox_sheets.setCurrentText(sheet)
-        if email_column is not None:
-            self.ui.comboBox_emailColumn.setCurrentText(email_column)
-        if message is not None:
-            self.ui.plainText_message.setPlainText(message)
-        if title is not None:
-            self.ui.lineEdit_title.setText(title)
+    # def load_settings(self, path_xlsx, sheet, email_column, message, title):
+    #     if path_xlsx is not None:
+    #         self.ui.lineEdit_pathXlsx.setText(path_xlsx)
+    #     if sheet is not None:
+    #         self.ui.comboBox_sheets.setCurrentText(sheet)
+    #     if email_column is not None:
+    #         self.ui.comboBox_emailColumn.setCurrentText(email_column)
+    #     if message is not None:
+    #         self.ui.plainText_message.setPlainText(message)
+    #     if title is not None:
+    #         self.ui.lineEdit_title.setText(title)
 
     def accept(self):
         path_xlsx = self.ui.lineEdit_pathXlsx.text()
