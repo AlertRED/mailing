@@ -12,6 +12,7 @@ class MainWindowView(QtWidgets.QMainWindow):
     start_signal = pyqtSignal()
     pause_signal = pyqtSignal()
     stop_signal = pyqtSignal()
+    print_log_signal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -22,12 +23,21 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.ui.pushButton_play.clicked.connect(self.start_signal)
         self.ui.pushButton_pause.clicked.connect(self.pause_signal)
         self.ui.pushButton_stop.clicked.connect(self.stop_signal)
+        self.print_log_signal.connect(self.print_log)
         # self.ui.pushButton_play.clicked.connect(self.play)
         # self.ui.pushButton_pause.clicked.connect(self.pause)
         # self.ui.pushButton_stop.clicked.connect(self.stop)
         # self.print_progress(0, 0)
         # self.ui.pushButton_stop.setEnabled(False)
         # self.ui.pushButton_pause.setEnabled(False)
+
+    def print_log(self, text, time=None):
+        if time:
+            text = '[ {0} ] {1}'.format(strftime("%H:%M:%S", time), text)
+        else:
+            text = '{0}'.format(text)
+
+        self.ui.plainText_log.appendPlainText(text)
 
     # def show_filters_checkboxes(self, texts, connects):
     #     for text, connect in zip(reversed(texts), reversed(connects)):
@@ -52,13 +62,7 @@ class MainWindowView(QtWidgets.QMainWindow):
     #     self.ui.pushButton_pause.setEnabled(is_pause)
     #     self.ui.pushButton_stop.setEnabled(is_stop)
     #
-    # @pyqtSlot(str, bool)
-    # def print_log(self, text, time=None):
-    #     if time:
-    #         text = '[ {0} ] {1}'.format(strftime("%H:%M:%S", time), text)
-    #     else:
-    #         text = '{0}'.format(text)
-    #     self.ui.plainText_log.appendPlainText(text)
+
     #
     # @pyqtSlot(int, int)
     # def print_progress(self, count: int, total: int):

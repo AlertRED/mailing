@@ -100,17 +100,50 @@ class Controller(QObject):
     # # def save_data_settings(self, path_xlsx, sheet, email_column, message, title):
     # #     self.dataDao.save_settings(path_xlsx, sheet, email_column, message, title)
 
+
+    # def start_mailing(self):
+    #
+    #     def foo(print_log, print_progress):
+    #         for info in self.mainDao.mailing():
+    #             message = info['message']
+    #             text = ''
+    #             if self.is_to:
+    #                 text += f'To: {message["to"]}\n'
+    #             if self.is_from:
+    #                 text += f'From: {message["from"]}\n'
+    #             if self.is_title:
+    #                 text += f'Title: {message["title"]}\n'
+    #             if self.is_message:
+    #                 text += f'Message: {message["body"]}\n'
+    #             print_log.emit(text, True)
+    #             print_progress.emit(info['count'], info['total'])
+    #
+    #     x = threading.Thread(target=foo, args=(self.print_log, self.print_progress,))
+    #     x.start()
+
     def start(self):
         self.model.is_play = True
         self.model.is_pause = False
+        self.mainView.print_log('Начало')
 
+
+        def foo(print_log):
+            for text in self.model.mailing():
+                print_log.emit(text)
+
+        x = threading.Thread(target=foo, args=(self.mainView.print_log_signal,))
+        x.start()
 
     def pause(self):
         self.model.is_pause = True
+        self.mainView.print_log('Пауза')
+
 
     def stop(self):
         self.model.is_play = False
         self.model.is_pause = False
+        self.mainView.print_log('Остановка')
+        self.model.current_index = 0
 
     def open_data_window(self):
         self.data_controller.run()

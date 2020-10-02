@@ -39,25 +39,25 @@ class DataController:
     def change_enable_sheets(self):
         if self.path_xlsx != "":
             self.data_view.enable_sheet(True)
-            self.data_view.show_sheets(['Sheet1'])
+            self.data_view.show_sheets(self.model.get_sheets(self.path_xlsx))
         else:
             self.data_view.enable_sheet(False)
             self.data_view.show_sheets([])
 
     def change_sheet(self, sheet_name):
         self.sheet_name = sheet_name
-        self.change_enable_email_header()
         self.load_table()
+        self.change_enable_email_header()
         self.enable_accept()
 
     def load_table(self):
-        headers, fields = self.model.get_xlsx(self.path_xlsx, self.sheet_name)
-        self.data_view.show_xlsx(headers, fields)
+        self.headers, self.fields = self.model.get_xlsx(self.path_xlsx, self.sheet_name)
+        self.data_view.show_xlsx(self.headers, self.fields)
 
     def change_enable_email_header(self):
         if self.sheet_name != "":
             self.data_view.enable_email_header(True)
-            self.data_view.show_email_headers(['header1', 'header2'])
+            self.data_view.show_email_headers(self.headers)
         else:
             self.data_view.enable_email_header(False)
             self.data_view.show_email_headers([])
@@ -83,7 +83,7 @@ class DataController:
         self.data_view.enable_accept(is_enable)
 
     def accept(self):
-        self.model.accept_data(self.title, self.message, self.path_xlsx, self.sheet_name, self.email_header)
+        self.model.accept_data(self.title, self.message, self.path_xlsx, self.sheet_name, self.email_header, self.headers, self.fields)
         self.data_view.close()
 
     def run(self):
