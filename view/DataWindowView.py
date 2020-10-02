@@ -14,6 +14,7 @@ class DataWindowView(QtWidgets.QMainWindow):
     change_email_header_signal = pyqtSignal(str)
     change_title_signal = pyqtSignal(str)
     change_message_signal = pyqtSignal(str)
+    accept_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -24,6 +25,7 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.comboBox_sheets.currentTextChanged.connect(self.change_sheet_signal)
         self.ui.comboBox_emailColumn.currentTextChanged.connect(self.change_email_header_signal)
         self.ui.lineEdit_title.textChanged.connect(self.change_title_signal)
+        self.ui.pushButton_accept.clicked.connect(self.accept_signal)
         self.ui.plainText_message.textChanged.connect(
             lambda: self.change_message_signal.emit(self.ui.plainText_message.toPlainText()))
 
@@ -75,8 +77,15 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.comboBox_emailColumn.clear()
         self.ui.comboBox_emailColumn.addItems(headers)
 
-    def show_xlsx(self):
-        pass
+    def show_xlsx(self, titles, fields):
+        self.ui.comboBox_emailColumn.addItems(titles)
+        self.ui.tableWidget_data.setRowCount(len(fields))
+        self.ui.tableWidget_data.setColumnCount(len(titles))
+        self.ui.tableWidget_data.setHorizontalHeaderLabels(titles)
+        for x, row in enumerate(fields):
+            for y, item in enumerate(row):
+                self.ui.tableWidget_data.setItem(x, y, QTableWidgetItem(item))
+        self.ui.tableWidget_data.resizeColumnsToContents()
 
     def enable_accept(self, is_enable):
         self.ui.pushButton_accept.setEnabled(is_enable)
@@ -92,15 +101,6 @@ class DataWindowView(QtWidgets.QMainWindow):
         # #         self.ui.comboBox_emailColumn.clear()
         # #         self.ui.comboBox_emailColumn.setEnabled(False)
         # #
-        # # def show_xlsx(self, titles, fields):
-        # #     self.ui.comboBox_emailColumn.addItems(titles)
-        # #     self.ui.tableWidget_data.setRowCount(len(fields))
-        # #     self.ui.tableWidget_data.setColumnCount(len(titles))
-        # #     self.ui.tableWidget_data.setHorizontalHeaderLabels(titles)
-        # #     for x, row in enumerate(fields):
-        # #         for y, item in enumerate(row):
-        # #             self.ui.tableWidget_data.setItem(x, y, QTableWidgetItem(item))
-        # #     self.ui.tableWidget_data.resizeColumnsToContents()
         # #
         # # # def load_settings(self, path_xlsx, sheet, email_column, message, title):
         # # #     if path_xlsx is not None:

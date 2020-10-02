@@ -11,6 +11,7 @@ class AccountsWindowView(QtWidgets.QMainWindow):
     change_login_signal = pyqtSignal(str)
     change_password_signal = pyqtSignal(str)
     change_path_accounts = pyqtSignal(str)
+    accept_signal = pyqtSignal()
 
 
     def __init__(self):
@@ -23,6 +24,7 @@ class AccountsWindowView(QtWidgets.QMainWindow):
         self.ui.lineEdit_password.textChanged.connect(self.change_password_signal)
         self.ui.lineEdit_login.textChanged.connect(self.change_login_signal)
         self.ui.lineEdit_pathTxt.textChanged.connect(self.change_path_accounts)
+        self.ui.pushButton_accept.clicked.connect(self.accept_signal)
     #     self.ui.radioButton_single.setChecked(True)
     #     self.ui.pushButton_browseTxt.clicked.connect(self.browse_choose_path)
     #     self.ui.pushButton_accept.clicked.connect(self.accept)

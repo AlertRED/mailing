@@ -11,7 +11,6 @@ class XlsxModel:
 
     def load_xlsx(self, path):
         self.file = pd.ExcelFile(path)
-        # self.xlsx_data = self.xlsx_data.fillna('')
 
     def get_sheets(self):
         if self.file:
