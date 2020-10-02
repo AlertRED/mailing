@@ -22,8 +22,6 @@ from model.Model import Model
 
 
 class Controller(QObject):
-    print_log = pyqtSignal(str, bool)
-    print_progress = pyqtSignal(int, int)
 
     def __init__(self):
         super().__init__()
@@ -61,7 +59,9 @@ class Controller(QObject):
     def init(self):
         self.mainView.open_data_signal.connect(self.open_data_window)
         self.mainView.open_accounts_signal.connect(self.open_accounts_window)
-
+        self.mainView.start_signal.connect(self.start)
+        self.mainView.pause_signal.connect(self.pause)
+        self.mainView.stop_signal.connect(self.stop)
 
     # def change_state_from(self, is_from):
     #     self.is_from = is_from
@@ -99,12 +99,24 @@ class Controller(QObject):
     #
     # # def save_data_settings(self, path_xlsx, sheet, email_column, message, title):
     # #     self.dataDao.save_settings(path_xlsx, sheet, email_column, message, title)
+
+    def start(self):
+        self.model.is_play = True
+        self.model.is_pause = False
+
+
+    def pause(self):
+        self.model.is_pause = True
+
+    def stop(self):
+        self.model.is_play = False
+        self.model.is_pause = False
+
     def open_data_window(self):
         self.data_controller.run()
 
     def open_accounts_window(self):
         self.accounts_controller.run()
-
 
     # def load_settings_accounts(self):
     #     is_single, email, password, path_txt = self.accountsDao.get_settings()

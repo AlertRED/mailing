@@ -9,6 +9,9 @@ from time import strftime
 class MainWindowView(QtWidgets.QMainWindow):
     open_data_signal = pyqtSignal()
     open_accounts_signal = pyqtSignal()
+    start_signal = pyqtSignal()
+    pause_signal = pyqtSignal()
+    stop_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -16,6 +19,9 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.actionData.triggered.connect(self.open_data_signal)
         self.ui.actionAccounts.triggered.connect(self.open_accounts_signal)
+        self.ui.pushButton_play.clicked.connect(self.start_signal)
+        self.ui.pushButton_pause.clicked.connect(self.pause_signal)
+        self.ui.pushButton_stop.clicked.connect(self.stop_signal)
         # self.ui.pushButton_play.clicked.connect(self.play)
         # self.ui.pushButton_pause.clicked.connect(self.pause)
         # self.ui.pushButton_stop.clicked.connect(self.stop)

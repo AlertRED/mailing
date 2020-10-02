@@ -9,3 +9,6 @@ class Model:
         self.path_xlsx = ""
         self.sheet_name = ""
         self.email_header = ""
+
+        self.is_play = False
+        self.is_pause = False

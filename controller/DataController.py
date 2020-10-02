@@ -26,7 +26,6 @@ class DataController:
         self.change_enable_sheets()
         self.enable_accept()
 
-
     def change_enable_sheets(self):
         if self.model.path_xlsx != "":
             self.data_view.enable_sheet(True)
@@ -41,7 +40,6 @@ class DataController:
         self.change_enable_email_header()
         self.enable_accept()
 
-
     def change_enable_email_header(self):
         if self.model.sheet_name != "":
             self.data_view.enable_email_header(True)
@@ -53,7 +51,6 @@ class DataController:
     def change_email_header(self, header_name):
         self.model.email_header = header_name
         self.enable_accept()
-
 
     def change_title(self, title):
         self.model.title = title
