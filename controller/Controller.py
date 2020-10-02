@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 from Exception import UserError
 from controller.AccountsController import AccountsController
+from controller.DataController import DataController
 from dao.AccountsDao import AccountsDao
 from dao.DataDao import DataDao
 from dao.MainDao import MainDao
@@ -37,7 +38,7 @@ class Controller(QObject):
         # self.mailing_model = MailingModel(self.accounts_model, self.settings)
         self.mainView = MainWindowView()
         self.accounts_controller = AccountsController(self.model)
-        #
+        self.data_controller = DataController(self.model)
         # self.mainDao = MainDao(self.mailing_model, self.xlsx_model, self, self.settings)
         # self.dataDao = DataDao(self.validate_model, self.settings, self.xlsx_model)
         # self.accountsDao = AccountsDao(self.accounts_model, self.validate_model, self.settings)
@@ -99,7 +100,7 @@ class Controller(QObject):
     # # def save_data_settings(self, path_xlsx, sheet, email_column, message, title):
     # #     self.dataDao.save_settings(path_xlsx, sheet, email_column, message, title)
     def open_data_window(self):
-        self.dataView.show()
+        self.data_controller.run()
 
     def open_accounts_window(self):
         self.accounts_controller.run()

@@ -14,10 +14,10 @@ class MainDao:
         self.is_start = False
 
     def openDataWindow(self):
-        self.controller.dataView.show()
+        self.controller.data_view.show()
 
     def openAccountsWindow(self):
-        self.controller.accountsView.show()
+        self.controller.accounts_view.show()
 
     def pause_mailing(self):
         self.model_mailing.pause_mailing()

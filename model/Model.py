@@ -5,3 +5,7 @@ class Model:
         self.login = ""
         self.path_accounts = ""
         self.is_single = True
+
+        self.path_xlsx = ""
+        self.sheet_name = ""
+        self.email_header = ""
