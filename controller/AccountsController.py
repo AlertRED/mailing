@@ -1,5 +1,6 @@
 import threading
 
+from Exception import UserError
 from view.AccountsWindowView import AccountsWindowView
 
 
@@ -25,10 +26,12 @@ class AccountsController:
 
     def test_account(self):
         def foo(login, password):
-            if self.model.test_connection(login, password):
-                self.accounts_view.show_info('Account is connected')
+            try:
+                self.model.test_connection(login, password)
+            except UserError as e:
+                self.accounts_view.show_error(e)
             else:
-                self.accounts_view.show_error('Account not is connected')
+                self.accounts_view.show_info('Account is connected')
         x = threading.Thread(target=foo, args=(self.login, self.password,))
         x.start()
 

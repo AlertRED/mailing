@@ -2,23 +2,15 @@ import sys
 import threading
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import QObject
 
-from Exception import UserError
 from controller.AccountsController import AccountsController
 from controller.DataController import DataController
-from dao.AccountsDao import AccountsDao
-from dao.DataDao import DataDao
-from dao.MainDao import MainDao
+
 from view.MainWindowView import MainWindowView
-from view.AccountsWindowView import AccountsWindowView
-from view.DataWindowView import DataWindowView
-from model.ValidateModel import ValidateModel
-from model.AccountsModel import AccountsModel
-from model.XlsxModel import XlsxModel
-from model.MailingModel import MailingModel
-from settings import Settings
+
 from model.Model import Model
+from time import gmtime
 
 
 class Controller(QObject):
@@ -27,123 +19,87 @@ class Controller(QObject):
         super().__init__()
         self.app = QtWidgets.QApplication(sys.argv)
         self.model = Model()
-        # self.settings = Settings()
-        # self.settings.load_settings()
-
-        # self.validate_model = ValidateModel()
-        # self.accounts_model = AccountsModel(self.validate_model)
-        # self.xlsx_model = XlsxModel()
-        # self.mailing_model = MailingModel(self.accounts_model, self.settings)
         self.mainView = MainWindowView()
         self.accounts_controller = AccountsController(self.model)
         self.data_controller = DataController(self.model)
-        # self.mainDao = MainDao(self.mailing_model, self.xlsx_model, self, self.settings)
-        # self.dataDao = DataDao(self.validate_model, self.settings, self.xlsx_model)
-        # self.accountsDao = AccountsDao(self.accounts_model, self.validate_model, self.settings)
-
-        # self.dataDao.load_settings()
-        # self.accountsDao.load_settings()
-
-        # self.print_log.connect(self.mainView.print_log)
-        # self.print_progress.connect(self.mainView.print_progress)
-
-        # self.mainView.show_filters_checkboxes(['From', 'To', 'Title', 'Message'],
-        #                                       [self.change_state_from, self.change_state_to, self.change_state_title,
-        #                          self.change_state_message])
-        # self.is_from = False
-        # self.is_to = False
-        # self.is_title = False
-        # self.is_message = False
         self.init()
 
     def init(self):
         self.mainView.open_data_signal.connect(self.open_data_window)
         self.mainView.open_accounts_signal.connect(self.open_accounts_window)
+        self.mainView.test_only_signal.connect(self.test_only)
         self.mainView.start_signal.connect(self.start)
         self.mainView.pause_signal.connect(self.pause)
         self.mainView.stop_signal.connect(self.stop)
 
-    # def change_state_from(self, is_from):
-    #     self.is_from = is_from
-    #
-    # def change_state_to(self, is_to):
-    #     self.is_to = is_to
-    #
-    # def change_state_title(self, is_title):
-    #     self.is_title = is_title
-    #
-    # def change_state_message(self, is_message):
-    #     self.is_message = is_message
-    #
-    # def save_account_settings(self, is_single, email, password, path_txt):
-    #     self.accountsDao.save_settings(is_single, email, password, path_txt)
-    #
-    # def test_account(self, email, password):
-    #     try:
-    #         is_connected = self.accountsDao.test_account(email, password)
-    #         if is_connected:
-    #             self.accountsView.show_info('Account is connected')
-    #         else:
-    #             self.accountsView.show_info('Account NOT is connected')
-    #     except UserError as e:
-    #         self.accountsView.show_error(e)
-    #
-    # def load_sheets(self, path):
-    #     self.dataDao.load_xlsx(path)
-    #     sheets = self.dataDao.get_sheets()
-    #     self.dataView.show_sheets(sheets)
-    #
-    # def select_sheet(self, text):
-    #     data = self.dataDao.load_sheet(text)
-    #     self.dataView.show_xlsx(data[0], data[1])
-    #
-    # # def save_data_settings(self, path_xlsx, sheet, email_column, message, title):
-    # #     self.dataDao.save_settings(path_xlsx, sheet, email_column, message, title)
-
-
-    # def start_mailing(self):
-    #
-    #     def foo(print_log, print_progress):
-    #         for info in self.mainDao.mailing():
-    #             message = info['message']
-    #             text = ''
-    #             if self.is_to:
-    #                 text += f'To: {message["to"]}\n'
-    #             if self.is_from:
-    #                 text += f'From: {message["from"]}\n'
-    #             if self.is_title:
-    #                 text += f'Title: {message["title"]}\n'
-    #             if self.is_message:
-    #                 text += f'Message: {message["body"]}\n'
-    #             print_log.emit(text, True)
-    #             print_progress.emit(info['count'], info['total'])
-    #
-    #     x = threading.Thread(target=foo, args=(self.print_log, self.print_progress,))
-    #     x.start()
-
     def start(self):
+        self.mainView.test_enable(False)
+        self.mainView.state_player(False, True, True)
         self.model.is_play = True
         self.model.is_pause = False
-        self.mainView.print_log('Начало')
+        self.print_message('Start')
+        self.model.load_accounts()
+        self.mailing()
 
+    def mailing(self):
+        def foo(print_log, show_progress, show_emails_stat, messages):
+            for feed_back in messages:
+                message = feed_back.get('message')
+                if message:
+                    text = ''
+                    text += message.get('from', '') + '\n'
+                    text += message.get('to', '') + '\n'
+                    text += message.get('title', '') + '\n'
+                    text += message.get('body', '')
+                    print_log(text)
 
-        def foo(print_log):
-            for text in self.model.mailing():
-                print_log.emit(text)
+                email_connected = feed_back.get('email_connected')
+                if email_connected:
+                    print_log(f"Connected to {email_connected}")
 
-        x = threading.Thread(target=foo, args=(self.mainView.print_log_signal,))
+                email_not_connected = feed_back.get('email_not_connected')
+                if email_not_connected:
+                    print_log(f"Connected wrong to {email_not_connected}")
+
+                current_send, total_send = feed_back.get('current_send'), feed_back.get('total_send')
+                if current_send and total_send:
+                    show_progress(current_send, total_send)
+
+                current_email, index_email, total_emails = feed_back.get('current_email'), feed_back.get('index_email'), feed_back.get('total_emails')
+                if current_email and index_email and total_emails:
+                    show_emails_stat(current_email, index_email, total_emails)
+
+        x = threading.Thread(target=foo, args=(
+        self.print_message, self.show_progress, self.show_emails_stat, self.model.mailing(),))
         x.start()
 
-    def pause(self):
-        self.model.is_pause = True
-        self.mainView.print_log('Пауза')
+    def print_message(self, text):
+        time = gmtime()
+        self.mainView.print_log_signal.emit(text, time)
 
+    def show_progress(self, count, total):
+        self.mainView.print_progress_signal.emit(count, total)
+
+    def show_emails_stat(self, email, count, total):
+        self.mainView.print_email_stat_signal.emit(email, count, total)
+
+    def test_only(self, is_test):
+        self.model.is_test = is_test
+
+    def pause(self):
+        if self.model.is_play:
+            self.model.is_pause = True
+            self.print_message('Pause')
+            self.mainView.state_player(True, False, True)
 
     def stop(self):
-        self.model.is_play = False
-        self.model.is_pause = False
-        self.mainView.print_log('Остановка')
-        self.model.current_index = 0
+        if self.model.is_play:
+            self.mainView.test_enable(True)
+            self.model.is_play = False
+            self.model.is_pause = False
+            self.print_message('Stop')
+            self.model.current_index = 0
+            self.mainView.state_player(True, False, False)
 
     def open_data_window(self):
         self.data_controller.run()
@@ -151,42 +107,8 @@ class Controller(QObject):
     def open_accounts_window(self):
         self.accounts_controller.run()
 
-    # def load_settings_accounts(self):
-    #     is_single, email, password, path_txt = self.accountsDao.get_settings()
-    #     self.accountsView.load_settings(is_single, email, password, path_txt)
-    #
-    # def load_settings_data(self):
-    #     path_xlsx, sheet, email_column, message, title = self.dataDao.get_settings()
-    #     self.dataView.load_settings(path_xlsx, sheet, email_column, message, title)
-    #
-    # def start_mailing(self):
-    #
-    #     def foo(print_log, print_progress):
-    #         for info in self.mainDao.mailing():
-    #             message = info['message']
-    #             text = ''
-    #             if self.is_to:
-    #                 text += f'To: {message["to"]}\n'
-    #             if self.is_from:
-    #                 text += f'From: {message["from"]}\n'
-    #             if self.is_title:
-    #                 text += f'Title: {message["title"]}\n'
-    #             if self.is_message:
-    #                 text += f'Message: {message["body"]}\n'
-    #             print_log.emit(text, True)
-    #             print_progress.emit(info['count'], info['total'])
-    #
-    #     x = threading.Thread(target=foo, args=(self.print_log, self.print_progress,))
-    #     x.start()
-    #
-    #
-    # def stop_mailing(self):
-    #     self.mainDao.stop_mailing()
-    #     self.print_progress.emit(0, 0)
-    #
-    # def pause_mailing(self):
-    #     self.mainDao.pause_mailing()
-
     def start_app(self):
+        self.mainView.state_player(True, False, False)
+        self.mainView.test_checked(True)
         self.mainView.show()
         self.app.exec_()

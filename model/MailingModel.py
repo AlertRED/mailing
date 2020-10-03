@@ -40,7 +40,7 @@ class MailingModel:
         accounts = self.accounts.get_account()
         own_email, own_password = next(accounts)
         if not is_test:
-            self.smtp.login(own_email, own_password)
+            self.smtp.email(own_email, own_password)
 
         total_count = len(fields)
 
@@ -63,29 +63,4 @@ class MailingModel:
             sleep(1)
 
 
-class SMTP:
-    def __init__(self):
-        self.email = None
-        self.password = None
-        self.smtpObj = None
 
-    def get_message(self, to, from1, text, title):
-        msg = MIMEText(text, 'plain', 'utf-8')
-        msg['Subject'] = Header(title, 'utf-8')
-        msg['From'] = from1
-        msg['To'] = to
-        return msg
-
-    def connect_smtp(self, smtp_adress, port=587):
-        self.smtpObj = smtplib.SMTP(smtp_adress, port, timeout=10)
-        self.smtpObj.starttls()
-
-    def login(self, email, password):
-        smtp_adress = 'smtp.' + self.email.split('@')[1]
-        self.connect_smtp(smtp_adress)
-        self.email = email
-        self.password = password
-
-    def send_message(self, _to, _title, _message):
-        message = self.get_message(_to, self.email, _message, _title)
-        # self.smtpObj.sendmail(self.email, _to, message.as_string())
