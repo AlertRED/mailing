@@ -65,20 +65,35 @@ class Model:
 
     def load_accounts(self):
         if self.is_single:
+            if self.email == '' or self.password == '':
+                raise UserError('Email or password is empty')
             self.accounts = [(self.email, self.password)]
         else:
+            if self.path_accounts == '':
+                raise UserError('Path accounts is empty')
             self.find_accounts_from_file(self.path_accounts)
 
-    def validate_data_for_mailing(self):
+    def start_mailing(self):
+        self.load_accounts()
         if self.path_xlsx == '':
             raise UserError('Data are not selected')
-        if not self.path_accounts and not (self.email and self.password):
+        if len(self.accounts) == 0:
             raise UserError('Accounts are not selected')
-        return True
+        self.is_play = True
+        self.is_pause = False
+
+        return self.mailing()
+
+    def pause_mailing(self):
+        self.is_play = True
+        self.is_pause = True
+
+    def stop_mailing(self):
+        self.current_index = 0
+        self.is_play = False
+        self.is_pause = False
 
     def mailing(self):
-
-        self.is_play = True
         total_rows = len(self.fields)
         total_emails = len(self.accounts)
         email_index = self.headers.index(self.email_header)

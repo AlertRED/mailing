@@ -32,22 +32,37 @@ class Controller(QObject):
         self.mainView.start_signal.connect(self.start)
         self.mainView.pause_signal.connect(self.pause)
         self.mainView.stop_signal.connect(self.stop)
+        self.mainView.start_without_test_message.connect(self.absolute_start)
 
     def start(self):
-        try:
-            self.model.validate_data_for_mailing()
-        except UserError as e:
-            self.mainView.show_error(str(e))
+        if self.model.is_test:
+                self.absolute_start(True)
         else:
-            self.mainView.test_enable(False)
-            self.mainView.state_player(False, True, True)
-            self.model.is_play = True
-            self.model.is_pause = False
-            self.print_message('Start')
-            self.model.load_accounts()
-            self.mailing()
+            self.mainView.show_no_test_message()
 
-    def mailing(self):
+    def pause(self):
+        if self.model.is_play:
+            self.mainView.pause_mailing()
+            self.print_message('Pause')
+            self.model.pause_mailing()
+
+    def stop(self):
+        if self.model.is_play:
+            self.mainView.stop_mailing()
+            self.print_message('Stop')
+            self.model.stop_mailing()
+
+    def absolute_start(self, is_start):
+        if is_start:
+            try:
+                mailing = self.model.start_mailing()
+            except UserError as e:
+                self.mainView.show_error(str(e))
+            else:
+                self.print_message('Start')
+                self.mailing(mailing)
+
+    def mailing(self, mailing):
         def foo(print_log, show_progress, show_emails_stat, messages):
             for feed_back in messages:
                 message = feed_back.get('message')
@@ -76,7 +91,7 @@ class Controller(QObject):
                     show_emails_stat(current_email, index_email, total_emails)
 
         x = threading.Thread(target=foo, args=(
-        self.print_message, self.show_progress, self.show_emails_stat, self.model.mailing(),))
+        self.print_message, self.show_progress, self.show_emails_stat, mailing,))
         x.start()
 
     def print_message(self, text):
@@ -92,21 +107,6 @@ class Controller(QObject):
     def test_only(self, is_test):
         self.model.is_test = is_test
 
-    def pause(self):
-        if self.model.is_play:
-            self.model.is_pause = True
-            self.print_message('Pause')
-            self.mainView.state_player(True, False, True)
-
-    def stop(self):
-        if self.model.is_play:
-            self.mainView.test_enable(True)
-            self.model.is_play = False
-            self.model.is_pause = False
-            self.print_message('Stop')
-            self.model.current_index = 0
-            self.mainView.state_player(True, False, False)
-
     def open_data_window(self):
         self.data_controller.run()
 
@@ -114,7 +114,7 @@ class Controller(QObject):
         self.accounts_controller.run()
 
     def start_app(self):
-        self.mainView.state_player(True, False, False)
+        self.mainView.stop_mailing()
         self.mainView.test_checked(True)
         self.mainView.show()
         self.app.exec_()

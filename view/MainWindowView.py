@@ -16,6 +16,7 @@ class MainWindowView(QtWidgets.QMainWindow):
     print_log_signal = pyqtSignal(str, time.struct_time)
     print_progress_signal = pyqtSignal(int, int)
     print_email_stat_signal = pyqtSignal(str, int, int)
+    start_without_test_message = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -47,16 +48,31 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.ui.label_curentEmail.setText(f'Current: {email}')
         self.ui.label_countEmails.setText(f'Accounts: {count} / {total:<6}')
 
-    def state_player(self, is_start, is_pause, is_stop):
-        self.ui.pushButton_play.setEnabled(is_start)
-        self.ui.pushButton_pause.setEnabled(is_pause)
-        self.ui.pushButton_stop.setEnabled(is_stop)
-
     def test_checked(self, is_checked):
         self.ui.checkBox_testOnly.setChecked(is_checked)
 
-    def test_enable(self, is_enable):
-        self.ui.checkBox_testOnly.setEnabled(is_enable)
+    def start_mailing(self):
+        self.__state_player(False, True, True)
+        self.ui.checkBox_testOnly.setEnabled(True)
+        self.ui.checkBox_testOnly.setEnabled(False)
+
+    def pause_mailing(self):
+        self.__state_player(True, False, True)
+
+    def stop_mailing(self):
+        self.__state_player(True, False, False)
+        self.ui.checkBox_testOnly.setEnabled(True)
+
+    def show_no_test_message(self):
+        qm = QtWidgets.QMessageBox()
+        result = qm.question(self, '', "Are you sure to start WITHOUT TEST?", qm.Yes | qm.No)
+        self.start_without_test_message.emit(result == qm.Yes)
+
+
+    def __state_player(self, is_start, is_pause, is_stop):
+        self.ui.pushButton_play.setEnabled(is_start)
+        self.ui.pushButton_pause.setEnabled(is_pause)
+        self.ui.pushButton_stop.setEnabled(is_stop)
 
     def show_error(self, text: str):
         msg = QtWidgets.QMessageBox()
