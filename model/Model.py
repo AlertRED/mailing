@@ -1,12 +1,7 @@
 import re
-import smtplib
-from email.header import Header
-from email.mime.text import MIMEText
 from time import sleep
-
 import pandas as pd
-
-from Exception import UserError
+from support.mailing import SMTP, Mailing
 
 
 class Model:
@@ -78,12 +73,7 @@ class Model:
         total_emails = len(self.accounts)
         email_index = self.headers.index(self.email_header)
 
-        smtp = SMTP()
-        accounts = (account for account in self.accounts)
-
-        email = None
-        if self.is_test:
-            email = next(accounts)[0]
+        mail = Mailing(self.accounts)
 
         for index in range(self.current_index, total_rows):
             if self.is_pause or not self.is_play:
@@ -97,17 +87,9 @@ class Model:
             _title = self.title.format(**args)
 
             if not self.is_test:
-                if not smtp.is_connected():
-                    for email, password in accounts:
-                        if smtp.login(email, password):
-                            yield {'email_connected': email}
-                            break
-                        yield {'email_not_connected': email}
-                _from = email
-                smtp.send_message(_to, _title, _body)
+                _from = mail.send_mail(_to, _title, _body)
             else:
-                _from = email
-
+                _from = self.accounts[0][0]
 
             self.current_index = index
 
@@ -117,7 +99,8 @@ class Model:
             msg['title'] = _title
             msg['body'] = _body
 
-            yield {'current_send': self.current_index + 1, 'total_send': total_rows, 'current_email': email, 'index_email': 1,
+            yield {'current_send': self.current_index + 1, 'total_send': total_rows, 'current_email': _from,
+                   'index_email': 1,
                    'total_emails': total_emails, 'message': msg}
             sleep(1)
 
@@ -137,48 +120,4 @@ class Model:
         self.fields = fields
 
 
-class SMTP:
-    def __init__(self):
-        self.email = None
-        self.password = None
-        self.smtpObj = smtplib.SMTP()
 
-    def is_connected(self)->bool:
-        try:
-            self.smtpObj.helo('')
-            return True
-        except smtplib.SMTPServerDisconnected:
-            return False
-
-    def get_message(self, to, from1, text, title):
-        msg = MIMEText(text, 'plain', 'utf-8')
-        msg['Subject'] = Header(title, 'utf-8')
-        msg['From'] = from1
-        msg['To'] = to
-        return msg
-
-    def connect_smtp(self, port=587):
-        smtp_adress = 'smtp.' + self.email.split('@')[1]
-        self.smtpObj = smtplib.SMTP(smtp_adress, port, timeout=10)
-        code = self.smtpObj.starttls()[0]
-        return code == 220
-
-    def is_validate_email(self, email):
-        return re.match(r'[^@]+@[^@]+\.[^@]+', email)
-
-    def login(self, email, password):
-        if not self.is_validate_email(email):
-            raise UserError('Email is not validate')
-        self.email = email
-        self.password = password
-        if not self.connect_smtp():
-            raise UserError('Error server connection')
-        try:
-            code = self.smtpObj.login(self.email, self.password)[0]
-        except:
-            raise UserError('Error login')
-        return code == 235
-
-    def send_message(self, _to, _title, _body):
-        message = self.get_message(_to, self.email, _body, _title)
-        # self.smtpObj.sendmail(self.email, _to, message.as_string())
