@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QSize
 
 from view.qt import MainWindow
 from time import strftime
@@ -57,3 +57,11 @@ class MainWindowView(QtWidgets.QMainWindow):
 
     def test_enable(self, is_enable):
         self.ui.checkBox_testOnly.setEnabled(is_enable)
+
+    def show_error(self, text: str):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText("Error")
+        msg.setInformativeText(text)
+        msg.setWindowTitle("Error")
+        msg.exec()

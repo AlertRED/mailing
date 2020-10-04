@@ -1,6 +1,8 @@
 import re
 from time import sleep
 import pandas as pd
+
+from Exception import UserError
 from support.mailing import SMTP, Mailing
 
 
@@ -67,7 +69,15 @@ class Model:
         else:
             self.find_accounts_from_file(self.path_accounts)
 
+    def validate_data_for_mailing(self):
+        if self.path_xlsx == '':
+            raise UserError('Data are not selected')
+        if not self.path_accounts and not (self.email and self.password):
+            raise UserError('Accounts are not selected')
+        return True
+
     def mailing(self):
+
         self.is_play = True
         total_rows = len(self.fields)
         total_emails = len(self.accounts)
@@ -87,9 +97,9 @@ class Model:
             _title = self.title.format(**args)
 
             if not self.is_test:
-                _from = mail.send_mail(_to, _title, _body)
+                index_account, _from = mail.send_mail(_to, _title, _body)
             else:
-                _from = self.accounts[0][0]
+                index_account, _from = 0, self.accounts[0][0]
 
             self.current_index = index
 
@@ -100,8 +110,7 @@ class Model:
             msg['body'] = _body
 
             yield {'current_send': self.current_index + 1, 'total_send': total_rows, 'current_email': _from,
-                   'index_email': 1,
-                   'total_emails': total_emails, 'message': msg}
+                   'index_email': index_account, 'total_emails': total_emails, 'message': msg}
             sleep(1)
 
     def accept_accounts(self, login, password, is_single, path_accounts):
@@ -118,6 +127,3 @@ class Model:
         self.email_header = email_header
         self.headers = headers
         self.fields = fields
-
-
-

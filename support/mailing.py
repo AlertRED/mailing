@@ -30,7 +30,7 @@ class Mailing:
         if not self.smtp.is_connected():
             self.connect_smtp()
         self.smtp.send_message(_to, _title, _body)
-        return self.accounts[self.index_account][0]
+        return self.index_account, self.accounts[self.index_account][0]
 
 
 class SMTP:

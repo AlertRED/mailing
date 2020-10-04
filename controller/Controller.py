@@ -4,6 +4,7 @@ import threading
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QObject
 
+from Exception import UserError
 from controller.AccountsController import AccountsController
 from controller.DataController import DataController
 
@@ -33,13 +34,18 @@ class Controller(QObject):
         self.mainView.stop_signal.connect(self.stop)
 
     def start(self):
-        self.mainView.test_enable(False)
-        self.mainView.state_player(False, True, True)
-        self.model.is_play = True
-        self.model.is_pause = False
-        self.print_message('Start')
-        self.model.load_accounts()
-        self.mailing()
+        try:
+            self.model.validate_data_for_mailing()
+        except UserError as e:
+            self.mainView.show_error(str(e))
+        else:
+            self.mainView.test_enable(False)
+            self.mainView.state_player(False, True, True)
+            self.model.is_play = True
+            self.model.is_pause = False
+            self.print_message('Start')
+            self.model.load_accounts()
+            self.mailing()
 
     def mailing(self):
         def foo(print_log, show_progress, show_emails_stat, messages):
