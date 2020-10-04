@@ -29,36 +29,6 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.plainText_message.textChanged.connect(
             lambda: self.change_message_signal.emit(self.ui.plainText_message.toPlainText()))
 
-        #     self.ui.pushButton_accept.clicked.connect(self.accept)
-        #     self.ui.lineEdit_title.textChanged.connect(self.change_title)
-        #     self.ui.plainText_message.textChanged.connect(self.change_message)
-        #     self.ui.comboBox_sheets.setEnabled(False)
-        #     self.ui.comboBox_emailColumn.setEnabled(False)
-        #
-        # # def change_path_xlsx(self):
-        # #     path = self.ui.lineEdit_pathXlsx.text()
-        # #     self.controller.load_sheets(path)
-        # #
-        # # def path_xlsx_is_validate(self):
-        # #     self.enable_accept()
-        # #
-        # # def change_message(self):
-        # #     self.enable_accept()
-        # #
-        # # def change_title(self):
-        # #     self.enable_accept()
-        # #
-        # # def enable_accept(self):
-        # #     if self.ui.lineEdit_pathXlsx.text() and \
-        # #             self.ui.lineEdit_title.text() and \
-        # #             self.ui.plainText_message.toPlainText() and \
-        # #             self.ui.comboBox_sheets.currentIndex() != -1 and \
-        # #             self.ui.comboBox_emailColumn.currentIndex() != -1:
-        # #         self.ui.pushButton_accept.setEnabled(True)
-        # #     else:
-        # #         self.ui.pushButton_accept.setEnabled(False)
-        # #
-
     def browse_xlsx(self):
         path_open = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), 'Excel (*.xls *.xlsx)')[0]
         self.ui.lineEdit_pathXlsx.setText(path_open)
@@ -89,36 +59,3 @@ class DataWindowView(QtWidgets.QMainWindow):
 
     def enable_accept(self, is_enable):
         self.ui.pushButton_accept.setEnabled(is_enable)
-
-        # #
-        # # def _select_sheet(self, index):
-        # #     if index != -1:
-        # #         sheet_name = self.ui.comboBox_sheets.currentText()
-        # #         self.controller.select_sheet(sheet_name)
-        # #         self.ui.comboBox_emailColumn.setEnabled(True)
-        # #         self.enable_accept()
-        # #     else:
-        # #         self.ui.comboBox_emailColumn.clear()
-        # #         self.ui.comboBox_emailColumn.setEnabled(False)
-        # #
-        # #
-        # # # def load_settings(self, path_xlsx, sheet, email_column, message, title):
-        # # #     if path_xlsx is not None:
-        # # #         self.ui.lineEdit_pathXlsx.setText(path_xlsx)
-        # # #     if sheet is not None:
-        # # #         self.ui.comboBox_sheets.setCurrentText(sheet)
-        # # #     if email_column is not None:
-        # # #         self.ui.comboBox_emailColumn.setCurrentText(email_column)
-        # # #     if message is not None:
-        # # #         self.ui.plainText_message.setPlainText(message)
-        # # #     if title is not None:
-        # # #         self.ui.lineEdit_title.setText(title)
-        # #
-        # # def accept(self):
-        # #     path_xlsx = self.ui.lineEdit_pathXlsx.text()
-        # #     message = self.ui.plainText_message.toPlainText()
-        # #     sheet = self.ui.comboBox_sheets.currentText()
-        # #     email_column = self.ui.comboBox_emailColumn.currentText()
-        # #     title = self.ui.lineEdit_title.text()
-        # #     self.controller.save_data_settings(path_xlsx, sheet, email_column, message, title)
-        # #     self.close()
