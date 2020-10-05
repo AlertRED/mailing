@@ -1,3 +1,4 @@
+import os
 import re
 from time import sleep
 import pandas as pd
@@ -36,8 +37,15 @@ class Model:
         return smtp.login(login, password)
 
     def get_sheets(self, path):
-        file = pd.ExcelFile(path)
-        return file.sheet_names
+        _, file_extension = os.path.splitext(path)
+        if file_extension == '.xlsx':
+            if os.path.isfile(path):
+                file = pd.ExcelFile(path)
+                return file.sheet_names
+            else:
+                raise UserError('File not exist')
+        else:
+            raise UserError('File is not xlsx')
 
     def get_xlsx(self, path, sheet):
         file = pd.ExcelFile(path)

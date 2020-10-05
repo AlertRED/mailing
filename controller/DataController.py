@@ -2,6 +2,7 @@ import threading
 
 from PyQt5.QtCore import pyqtSignal
 
+from Exception import UserError
 from view.DataWindowView import DataWindowView
 
 
@@ -37,12 +38,14 @@ class DataController:
         self.enable_accept()
 
     def change_enable_sheets(self):
-        if self.path_xlsx != "":
-            self.data_view.enable_sheet(True)
-            self.data_view.show_sheets(self.model.get_sheets(self.path_xlsx))
-        else:
+        try:
+            sheets = self.model.get_sheets(self.path_xlsx)
+        except UserError:
             self.data_view.enable_sheet(False)
             self.data_view.show_sheets([])
+        else:
+            self.data_view.show_sheets(sheets)
+            self.data_view.enable_sheet(True)
 
     def change_sheet(self, sheet_name):
         self.sheet_name = sheet_name
