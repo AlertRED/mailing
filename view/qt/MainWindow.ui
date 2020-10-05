@@ -38,6 +38,19 @@
          <enum>QLayout::SetNoConstraint</enum>
         </property>
         <item>
+         <widget class="QPushButton" name="pushButton_clearWindow">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Clear Window</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -102,7 +115,7 @@
         </property>
         <widget class="QPlainTextEdit" name="plainText_log">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -149,6 +162,34 @@
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_Views">
+                <item>
+                 <widget class="QCheckBox" name="checkBox_from">
+                  <property name="text">
+                   <string>From</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_to">
+                  <property name="text">
+                   <string>To</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_title">
+                  <property name="text">
+                   <string>Title</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_message">
+                  <property name="text">
+                   <string>Message</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <spacer name="verticalSpacer">
                   <property name="orientation">
@@ -318,11 +359,6 @@
      <height>24</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuParameters">
     <property name="title">
      <string>Parameters</string>
@@ -330,7 +366,6 @@
     <addaction name="actionAccounts"/>
     <addaction name="actionData"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuParameters"/>
   </widget>
   <action name="action">

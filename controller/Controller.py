@@ -32,7 +32,12 @@ class Controller:
         self.mainView.pause_signal.connect(self.pause)
         self.mainView.stop_signal.connect(self.stop)
         self.mainView.start_without_test_message.connect(self.absolute_start)
-        self.model.accept_data_signal.connect(self.accept_data)
+
+        self.mainView.check_filter_to_signal.connect(self.filter_to)
+        self.mainView.check_filter_from_signal.connect(self.filter_from)
+        self.mainView.check_filter_title_signal.connect(self.filter_title)
+        self.mainView.check_filter_message_signal.connect(self.filter_message)
+
 
     def start(self):
         if self.model.is_test:
@@ -65,19 +70,18 @@ class Controller:
 
     def mailing(self, mailing):
         def foo(print_log, show_progress, show_emails_stat, messages):
+            message_keys = ('from', 'to', 'title', 'body')
             while True:
                 try:
                     feed_back = next(messages)
                 except UserError as e:
                     self.mainView.show_error(str(e))
+                except StopIteration:
+                    break
                 else:
                     message = feed_back.get('message')
                     if message:
-                        text = ''
-                        text += message.get('from', '') + '\n'
-                        text += message.get('to', '') + '\n'
-                        text += message.get('title', '') + '\n'
-                        text += message.get('body', '')
+                        text = '\n'.join(message.get(key) for key in message_keys if message.get(key))
                         print_log(text)
 
                     email_connected = feed_back.get('email_connected')
@@ -88,20 +92,17 @@ class Controller:
                     if email_not_connected:
                         print_log(f"Connected wrong to {email_not_connected}")
 
-                    current_send, total_send = feed_back.get('current_send'), feed_back.get('total_send')
-                    if current_send and total_send:
-                        show_progress(current_send, total_send)
+                    current_sent, total_sent = feed_back.get('current_sent'), feed_back.get('total_sent')
+                    if current_sent and total_sent:
+                        show_progress(current_sent, total_sent)
 
-                    current_email, index_email, total_emails = feed_back.get('current_email'), feed_back.get('index_email'), feed_back.get('total_emails')
-                    if current_email and index_email and total_emails:
-                        show_emails_stat(current_email, index_email, total_emails)
+                    current_email, index_account, total_emails = feed_back.get('current_email'), feed_back.get('index_account'), feed_back.get('total_emails')
+                    if current_email and index_account and total_emails:
+                        show_emails_stat(current_email, index_account, total_emails)
 
         x = threading.Thread(target=foo, args=(
         self.print_message, self.show_progress, self.show_emails_stat, mailing,))
         x.start()
-
-    def accept_data(self):
-        print(1)
 
     def print_message(self, text):
         time = gmtime()
@@ -121,6 +122,18 @@ class Controller:
 
     def open_accounts_window(self):
         self.accounts_controller.run()
+
+    def filter_to(self, is_checked):
+        self.model.filter_to = is_checked
+
+    def filter_from(self, is_checked):
+        self.model.filter_from = is_checked
+
+    def filter_title(self, is_checked):
+        self.model.filter_title = is_checked
+
+    def filter_message(self, is_checked):
+        self.model.filter_message = is_checked
 
     def start_app(self):
         self.mainView.stop_mailing()

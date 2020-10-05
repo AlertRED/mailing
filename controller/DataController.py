@@ -21,6 +21,10 @@ class DataController:
         self.data_view.change_title_signal.connect(self.change_title)
         self.data_view.change_message_signal.connect(self.change_message)
         self.data_view.accept_signal.connect(self.accept)
+        self.data_view.browse_attachments_signal.connect(self.browse_attachments)
+        self.data_view.clear_attachments_signal.connect(self.clear_attachments)
+        self.data_view.change_attachments_signal.connect(self.change_attachments)
+
         self.title = ""
         self.message = ""
         self.path_xlsx = ""
@@ -28,6 +32,18 @@ class DataController:
         self.email_header = ""
         self.headers = list()
         self.fields = list()
+        self.attachments = list()
+
+    def browse_attachments(self):
+        self.data_view.browse_attachments()
+
+    def clear_attachments(self):
+        self.attachments.clear()
+        self.data_view.clear_attachments()
+
+    def change_attachments(self, paths):
+        self.attachments = paths
+        self.data_view.show_attachments(paths)
 
     def browse_xlsx(self):
         self.data_view.browse_xlsx()
@@ -86,7 +102,7 @@ class DataController:
         self.data_view.enable_accept(is_enable)
 
     def accept(self):
-        self.model.accept_data(self.title, self.message, self.path_xlsx, self.sheet_name, self.email_header, self.headers, self.fields)
+        self.model.accept_data(self.title, self.message, self.path_xlsx, self.sheet_name, self.email_header, self.headers, self.fields, self.attachments)
         self.data_view.close()
 
     def run(self):

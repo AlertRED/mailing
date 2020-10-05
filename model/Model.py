@@ -2,15 +2,12 @@ import os
 import re
 from time import sleep
 import pandas as pd
-from PyQt5.QtCore import pyqtSignal, QObject
 
 from Exception import UserError
 from support.mailing import SMTP, Mailing
 
 
-class Model(QObject):
-
-    accept_data_signal = pyqtSignal()
+class Model:
 
     def __init__(self):
         super().__init__()
@@ -27,6 +24,7 @@ class Model(QObject):
         self.message = ""
         self.headers = list()
         self.fields = list()
+        self.attachments = list()
 
         self.count_connections = 3
 
@@ -35,6 +33,11 @@ class Model(QObject):
 
         self.is_test = True
         self.accounts = list()
+
+        self.filter_to = False
+        self.filter_from = False
+        self.filter_title = False
+        self.filter_message = False
 
     def test_connection(self, login, password):
         smtp = SMTP()
@@ -124,20 +127,24 @@ class Model(QObject):
             _title = self.title.format(**args)
 
             if not self.is_test:
-                index_account, _from = mail.send_mail(_to, _title, _body)
+                index_account, _from = mail.send_mail(_to, _title, _body, self.attachments)
             else:
-                index_account, _from = 0, self.accounts[0][0]
+                index_account, _from = 1, self.accounts[0][0]
 
             self.current_index = index
 
             msg = dict()
-            msg['from'] = _from
-            msg['to'] = _to
-            msg['title'] = _title
-            msg['body'] = _body
+            if self.filter_to:
+                msg['from'] = _from
+            if self.filter_from:
+                msg['to'] = _to
+            if self.filter_title:
+                msg['title'] = _title
+            if self.filter_message:
+                msg['body'] = _body
 
-            yield {'current_send': self.current_index + 1, 'total_send': total_rows, 'current_email': _from,
-                   'index_email': index_account, 'total_emails': total_emails, 'message': msg}
+            yield {'current_sent': self.current_index + 1, 'total_sent': total_rows, 'current_email': _from,
+                   'index_account': index_account, 'total_emails': total_emails, 'message': msg}
             sleep(1)
 
     def accept_accounts(self, email, password, is_single, path_accounts):
@@ -146,7 +153,7 @@ class Model(QObject):
         self.is_single = is_single
         self.path_accounts = path_accounts
 
-    def accept_data(self, title, message, path_xlsx, sheet_name, email_header, headers, fields):
+    def accept_data(self, title, message, path_xlsx, sheet_name, email_header, headers, fields, attachments):
         self.title = title
         self.message = message
         self.path_xlsx = path_xlsx
@@ -154,5 +161,5 @@ class Model(QObject):
         self.email_header = email_header
         self.headers = headers
         self.fields = fields
-        self.accept_data_signal.emit()
+        self.attachments = attachments
 

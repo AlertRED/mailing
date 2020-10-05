@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtWidgets import QCheckBox
 
 from view.qt import MainWindow
 from time import strftime
@@ -18,6 +19,13 @@ class MainWindowView(QtWidgets.QMainWindow):
     print_email_stat_signal = pyqtSignal(str, int, int)
     start_without_test_message = pyqtSignal(bool)
 
+    clear_window_signal = pyqtSignal()
+
+    check_filter_from_signal = pyqtSignal(bool)
+    check_filter_to_signal = pyqtSignal(bool)
+    check_filter_title_signal = pyqtSignal(bool)
+    check_filter_message_signal = pyqtSignal(bool)
+
     def __init__(self):
         super().__init__()
         self.ui = MainWindow.Ui_MainWindow()
@@ -32,12 +40,19 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.print_progress_signal.connect(self.print_progress)
         self.print_email_stat_signal.connect(self.print_email_stat)
 
+        self.ui.pushButton_clearWindow.clicked.connect(self.clear_window)
+
+        self.ui.checkBox_to.toggled.connect(self.check_filter_to_signal)
+        self.ui.checkBox_from.toggled.connect(self.check_filter_from_signal)
+        self.ui.checkBox_title.toggled.connect(self.check_filter_title_signal)
+        self.ui.checkBox_message.toggled.connect(self.check_filter_message_signal)
+
     def print_log(self, text, time=None):
         if time:
-            text = '[ {0} ] {1}'.format(strftime("%H:%M:%S", time), text)
+            self.ui.plainText_log.appendHtml('<font color="blue">[ %s ]</font>' % strftime("%H:%M:%S", time))
+            self.ui.plainText_log.insertPlainText(text)
         else:
-            text = '{0}'.format(text)
-        self.ui.plainText_log.appendPlainText(text)
+            self.ui.plainText_log.appendPlainText(text)
 
     def print_progress(self, count: int, total: int):
         self.ui.progressBar_mailing.setValue(count)
@@ -68,11 +83,13 @@ class MainWindowView(QtWidgets.QMainWindow):
         result = qm.question(self, '', "Are you sure to start WITHOUT TEST?", qm.Yes | qm.No)
         self.start_without_test_message.emit(result == qm.Yes)
 
-
     def __state_player(self, is_start, is_pause, is_stop):
         self.ui.pushButton_play.setEnabled(is_start)
         self.ui.pushButton_pause.setEnabled(is_pause)
         self.ui.pushButton_stop.setEnabled(is_stop)
+
+    def clear_window(self):
+        self.ui.plainText_log.clear()
 
     def show_error(self, text: str):
         msg = QtWidgets.QMessageBox()

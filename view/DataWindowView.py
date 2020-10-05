@@ -15,6 +15,9 @@ class DataWindowView(QtWidgets.QMainWindow):
     change_title_signal = pyqtSignal(str)
     change_message_signal = pyqtSignal(str)
     accept_signal = pyqtSignal()
+    browse_attachments_signal = pyqtSignal()
+    clear_attachments_signal = pyqtSignal()
+    change_attachments_signal = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -28,6 +31,20 @@ class DataWindowView(QtWidgets.QMainWindow):
         self.ui.pushButton_accept.clicked.connect(self.accept_signal)
         self.ui.plainText_message.textChanged.connect(
             lambda: self.change_message_signal.emit(self.ui.plainText_message.toPlainText()))
+
+        self.ui.pushButton_browsAttachments.clicked.connect(self.browse_attachments_signal)
+        self.ui.pushButton_clearAttachments.clicked.connect(self.clear_attachments_signal)
+
+    def browse_attachments(self):
+        paths = QFileDialog.getOpenFileNames(self, 'Open file', os.getcwd())[0]
+        self.change_attachments_signal.emit(paths)
+
+    def show_attachments(self, paths):
+        self.ui.listWidget_attachments.clear()
+        self.ui.listWidget_attachments.addItems(paths)
+
+    def clear_attachments(self):
+        self.ui.listWidget_attachments.clear()
 
     def browse_xlsx(self):
         path_open = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), 'Excel (*.xls *.xlsx)')[0]
