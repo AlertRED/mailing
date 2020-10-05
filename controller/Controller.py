@@ -2,7 +2,6 @@ import sys
 import threading
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QObject
 
 from Exception import UserError
 from controller.AccountsController import AccountsController
@@ -14,7 +13,7 @@ from model.Model import Model
 from time import gmtime
 
 
-class Controller(QObject):
+class Controller:
 
     def __init__(self):
         super().__init__()
@@ -33,6 +32,7 @@ class Controller(QObject):
         self.mainView.pause_signal.connect(self.pause)
         self.mainView.stop_signal.connect(self.stop)
         self.mainView.start_without_test_message.connect(self.absolute_start)
+        self.model.accept_data_signal.connect(self.accept_data)
 
     def start(self):
         if self.model.is_test:
@@ -99,6 +99,9 @@ class Controller(QObject):
         x = threading.Thread(target=foo, args=(
         self.print_message, self.show_progress, self.show_emails_stat, mailing,))
         x.start()
+
+    def accept_data(self):
+        print(1)
 
     def print_message(self, text):
         time = gmtime()

@@ -2,14 +2,18 @@ import os
 import re
 from time import sleep
 import pandas as pd
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from Exception import UserError
 from support.mailing import SMTP, Mailing
 
 
-class Model:
+class Model(QObject):
+
+    accept_data_signal = pyqtSignal()
 
     def __init__(self):
+        super().__init__()
         self.current_index = 0
         self.password = ""
         self.email = ""
@@ -136,8 +140,8 @@ class Model:
                    'index_email': index_account, 'total_emails': total_emails, 'message': msg}
             sleep(1)
 
-    def accept_accounts(self, login, password, is_single, path_accounts):
-        self.email = login
+    def accept_accounts(self, email, password, is_single, path_accounts):
+        self.email = email
         self.password = password
         self.is_single = is_single
         self.path_accounts = path_accounts
@@ -150,3 +154,5 @@ class Model:
         self.email_header = email_header
         self.headers = headers
         self.fields = fields
+        self.accept_data_signal.emit()
+

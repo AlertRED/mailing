@@ -45,7 +45,7 @@ class MainWindowView(QtWidgets.QMainWindow):
         self.ui.label_sendedMails.setText(f'Sent: {count} / {total:<6}')
 
     def print_email_stat(self, email: str, count: int, total: int):
-        self.ui.label_curentEmail.setText(f'Current: {email}')
+        self.ui.label_curentEmail.setText(f'Current email: {email}')
         self.ui.label_countEmails.setText(f'Accounts: {count} / {total:<6}')
 
     def test_checked(self, is_checked):
