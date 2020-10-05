@@ -59,36 +59,42 @@ class Controller(QObject):
             except UserError as e:
                 self.mainView.show_error(str(e))
             else:
+                self.mainView.start_mailing()
                 self.print_message('Start')
                 self.mailing(mailing)
 
     def mailing(self, mailing):
         def foo(print_log, show_progress, show_emails_stat, messages):
-            for feed_back in messages:
-                message = feed_back.get('message')
-                if message:
-                    text = ''
-                    text += message.get('from', '') + '\n'
-                    text += message.get('to', '') + '\n'
-                    text += message.get('title', '') + '\n'
-                    text += message.get('body', '')
-                    print_log(text)
+            while True:
+                try:
+                    feed_back = next(messages)
+                except UserError as e:
+                    self.mainView.show_error(str(e))
+                else:
+                    message = feed_back.get('message')
+                    if message:
+                        text = ''
+                        text += message.get('from', '') + '\n'
+                        text += message.get('to', '') + '\n'
+                        text += message.get('title', '') + '\n'
+                        text += message.get('body', '')
+                        print_log(text)
 
-                email_connected = feed_back.get('email_connected')
-                if email_connected:
-                    print_log(f"Connected to {email_connected}")
+                    email_connected = feed_back.get('email_connected')
+                    if email_connected:
+                        print_log(f"Connected to {email_connected}")
 
-                email_not_connected = feed_back.get('email_not_connected')
-                if email_not_connected:
-                    print_log(f"Connected wrong to {email_not_connected}")
+                    email_not_connected = feed_back.get('email_not_connected')
+                    if email_not_connected:
+                        print_log(f"Connected wrong to {email_not_connected}")
 
-                current_send, total_send = feed_back.get('current_send'), feed_back.get('total_send')
-                if current_send and total_send:
-                    show_progress(current_send, total_send)
+                    current_send, total_send = feed_back.get('current_send'), feed_back.get('total_send')
+                    if current_send and total_send:
+                        show_progress(current_send, total_send)
 
-                current_email, index_email, total_emails = feed_back.get('current_email'), feed_back.get('index_email'), feed_back.get('total_emails')
-                if current_email and index_email and total_emails:
-                    show_emails_stat(current_email, index_email, total_emails)
+                    current_email, index_email, total_emails = feed_back.get('current_email'), feed_back.get('index_email'), feed_back.get('total_emails')
+                    if current_email and index_email and total_emails:
+                        show_emails_stat(current_email, index_email, total_emails)
 
         x = threading.Thread(target=foo, args=(
         self.print_message, self.show_progress, self.show_emails_stat, mailing,))

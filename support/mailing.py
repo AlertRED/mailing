@@ -25,6 +25,7 @@ class Mailing:
             if is_connected:
                 return email
             self.index_account += 1
+            raise UserError('Accounts is ended')
 
     def send_mail(self, _to, _title, _body):
         if not self.smtp.is_connected():
